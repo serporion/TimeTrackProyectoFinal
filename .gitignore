@@ -1,0 +1,56 @@
+# Laravel - entorno y seguridad
+.env
+.env.*
+.auth.json
+
+# Composer
+/vendor
+/vendor-prod
+composer.lock
+
+# Node.js / Frontend
+/node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+pnpm-lock.yaml
+
+# Build y recursos generados
+/public/build
+/public/hot
+/public/storage
+/public/mix-manifest.json
+/public/build/manifest.json
+/public/build/assets/
+
+/storage/*.key
+/storage/pail
+/storage/app/public/*
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+
+# PHPUnit / tests
+.phpunit.cache
+.phpunit.result.cache
+
+# Configs personalizados
+.phpactor.json
+Homestead.json
+Homestead.yaml
+
+# IDEs y herramientas
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+
+# Archivos temporales del SO y editores
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db

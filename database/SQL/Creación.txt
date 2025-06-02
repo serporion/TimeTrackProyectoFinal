@@ -1,0 +1,92 @@
+DROP DATABASE IF EXISTS TimeTrack;
+
+CREATE DATABASE IF NOT EXISTS TimeTrack
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_spanish_ci;
+
+USE TimeTrack;
+
+
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    dni VARCHAR(9) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('empleado', 'administrador') NOT NULL,
+    consiente_datos TINYINT(1) NOT NULL DEFAULT 0,
+    remember_token VARCHAR(100) NULL,
+    created_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+
+CREATE TABLE credenciales (
+    usuario_id INT,
+    clave TEXT COLLATE utf8mb4_spanish_ci NOT NULL,
+    PRIMARY KEY (usuario_id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+
+CREATE TABLE contratos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT,
+    horas FLOAT NOT NULL,
+    fecha_inicio DATETIME NOT NULL,
+    fecha_fin DATETIME,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+
+CREATE TABLE empleados (
+    id INT PRIMARY KEY,
+    historialFichaje JSON,
+    FOREIGN KEY (id) REFERENCES usuarios(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+
+CREATE TABLE administradores (
+    usuario_id INT PRIMARY KEY,
+    permisos JSON,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+
+
+CREATE TABLE qrs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    contenido VARCHAR(255) NOT NULL,
+    estado ENUM('valido', 'expirado') NOT NULL,
+    timestamp DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+CREATE TABLE fotos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ruta_imagen VARCHAR(255) NOT NULL,
+    timestamp DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+
+CREATE TABLE fichajes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT,
+    qr_id INT,
+    foto_id INT,
+    tipo ENUM('entrada', 'salida') NOT NULL,
+    timestamp DATETIME NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE RESTRICT,
+    FOREIGN KEY (qr_id) REFERENCES qrs(id) ON DELETE CASCADE,
+    FOREIGN KEY (foto_id) REFERENCES fotos(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+
+CREATE TABLE auditorias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT,
+    fichaje_id INT,
+    verificado TINYINT(1) NOT NULL DEFAULT 0, -- Valor booleano para MariaDB.
+    observaciones TEXT,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE RESTRICT,
+    FOREIGN KEY (fichaje_id) REFERENCES fichajes(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
