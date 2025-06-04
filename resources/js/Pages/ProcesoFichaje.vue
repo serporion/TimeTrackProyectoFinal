@@ -18,9 +18,11 @@ const handleError = (error) => {
     console.error('Evento ERROR recibido en padre:', error)
 }
 
+const mensajeFinal = ref(null) // Recoje el mensaje del proceso (éxito o error)
 const modo = ref('lector')
 const finalizado = ref(false)
 const qrData = ref(null)
+
 
 function onFichajeCompleto(data) {
     qrData.value = data
@@ -44,17 +46,34 @@ function onDetect(detectedCodes) {
         alert(`✅ QR detectado: ${result.value}`)
     }
 }
- */
+
 
 function onError(error) {
     alert('❌ Error cámara: ' + (error.message || error))
     console.error(error)
 }
 
+*/
+
+function onError(mensaje) {
+    mensajeFinal.value = '❌ ' + mensaje
+    console.log('[ERROR LECTOR]', mensaje)
+    finalizarProceso()
+}
+
+const reiniciarProceso = () => {
+    mensajeFinal.value = '📷 Aproxime su QR para fichar'
+    finalizado.value = false
+    qrData.value = null
+}
+
 
 const finalizarProceso = () => {
     finalizado.value = true
     modo.value = 'lector'
+    setTimeout(() => {
+        reiniciarProceso()
+    }, 7000)
 }
 
 
@@ -64,6 +83,13 @@ function onFotoSubida(id) {
     fotoId.value = id
     enviarFichaje()
 }
+
+function onFotoSubidaError(mensaje) {
+    mensajeFinal.value = '❌ Error al subir la imagen: ' + mensaje
+    console.log('[ERROR FOTOGRAFÍA]', mensaje)
+    finalizarProceso()
+}
+
 
 async function enviarFichaje() {
     try {
@@ -85,23 +111,30 @@ async function enviarFichaje() {
             })
         })
 
+        formData.append('clave', qrData.value.clave)
+
 
         console.log('Token justo antes del fichaje:', document.querySelector('meta[name="csrf-token"]').getAttribute('content'))
 
         const res = await fetch('/fichaje/completo', {
             method: 'POST',
             body: formData,
-            credentials: 'include'
+            credentials: 'include',
+            //headers: { //NGROKPRUEBA
+            //    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            //}
         })
 
 
 
         if (!res.ok) {
             if (res.status === 419) {
-                alert('⚠️ La sesión ha expirado. Refresca la página e inténtalo de nuevo.')
+                console.log('⚠️ La sesión ha expirado. Refresca la página e inténtalo de nuevo.');
+                mensajeFinal.value = '⚠️ La sesión ha expirado. Refresca la página e inténtalo de nuevo.';
             } else {
                 const html = await res.text()
                 console.error('Respuesta inesperada (no JSON):', html)
+                mensajeFinal.value = '⛔ Error inesperado al registrar el fichaje.'
             }
             return
         }
@@ -109,15 +142,24 @@ async function enviarFichaje() {
         const json = await res.json()
 
         if (json.error) {
-            alert(`⛔ Error: ${json.error}`)
+            console.log(`⛔ Error: ${json.error}`)
+            mensajeFinal.value = `⛔ Error: ${json.error}`
         } else {
-            alert('✅ Fichaje completado correctamente')
+            //mensajeFinal.value = '✅ Fichaje completado correctamente'
+            mensajeFinal.value = `✅ Fichaje completado correctamente\n👋 Hola, ${json.nombre}`
+
             if (json.advertencia) {
-                alert(json.advertencia)
+                //alert(json.advertencia)
+                mensajeFinal.value += `\n\n⚠️ ${json.advertencia}`
+            }
+            try {
+                new Audio('/notification.m4a').play()
+            } catch (e) {
+                console.warn('[DEBUG] No se pudo reproducir sonido:', e)
             }
         }
     } catch (err) {
-        alert('❌ Error al registrar el fichaje')
+        mensajeFinal.value = '❌ Error al registrar el fichaje'
         console.error(err)
     } finally {
         finalizarProceso()
@@ -141,7 +183,7 @@ async function enviarFichaje() {
                         @init="handleInit"
                         @decode="handleDecode"
                         @error="handleError"
-                    />-->
+                    />
 
                     <Lector
                         @fichaje-completo="onFichajeCompleto"
@@ -149,19 +191,37 @@ async function enviarFichaje() {
                         @decode="handleDecode"
                         @error="handleError"
                     />
+                    -->
+
+                    <Lector
+                        @fichaje-completo="onFichajeCompleto"
+                        @error="onError"
+                    />
+
 
                 </div>
 
                 <div v-else-if="modo === 'foto'">
                     <!--
-                    <CamaraFoto @foto-subida="finalizarProceso" />
+                        <CamaraFoto @foto-subida="finalizarProceso" />
+                        <CamaraFoto :nombreEmpleado="qrData?.usuario_id" @foto-subida="onFotoSubida" />
                     -->
-                    <CamaraFoto :nombreEmpleado="qrData?.usuario_id" @foto-subida="onFotoSubida" />
+                    <CamaraFoto
+                        :nombreEmpleado="qrData?.usuario_id"
+                        @foto-subida="onFotoSubida"
+                        @foto-subida-error="onFotoSubidaError"
+                    />
                 </div>
 
-                <div v-if="finalizado" class="text-green-600 text-center mt-4 font-semibold">
-                    ✅ Proceso completo
+                <div v-if="finalizado" :class="mensajeFinal?.includes('Error') ? 'text-red-600' : 'text-blue-800'" class="text-center mt-4 mb-4 font-semibold whitespace-pre-line">
+                    {{ mensajeFinal }}
                 </div>
+
+                <div v-else
+                     class="text-center mt-4 mb-4 font-semibold text-blue-800">
+                    📷 Aproxime su QR para fichar
+                </div>
+
             </div>
         </div>
         <Footer />

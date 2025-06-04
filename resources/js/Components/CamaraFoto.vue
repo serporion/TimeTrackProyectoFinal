@@ -5,7 +5,8 @@ const props = defineProps({
     nombreEmpleado: [String, Number]
 })
 
-const emit = defineEmits(['foto-subida'])
+const emit = defineEmits(['foto-subida', 'foto-subida-error'])
+
 
 const video = ref(null)
 const canvas = ref(null)
@@ -63,7 +64,10 @@ const capturarYSubir = async () => {
         const res = await fetch('/foto', {
             method: 'POST',
             body: formData,
-            credentials: 'include'
+            credentials: 'include',
+            //headers: { //NGROKPRUEBA
+            //    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            //}
         })
 
         /*
@@ -90,14 +94,14 @@ const capturarYSubir = async () => {
         const data = await res.json() //nuevo
         const fotoId = data.foto_id //nuevo
 
-        alert('Foto subida correctamente ✅')
+        console.log('Foto subida correctamente ✅')
 
         console.log('Token tras subir foto:', document.querySelector('meta[name="csrf-token"]').getAttribute('content'))
 
         emit('foto-subida', fotoId)
     } catch (error) {
-        alert('Error al subir la imagen ❌')
-        console.error(error)
+        console.error('Error al subir la imagen ❌', error)
+        emit('foto-subida-error', error.message || 'Error desconocido')
     }
 }
 

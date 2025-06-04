@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Components\Auth\Models\Credencial;
 use App\Components\Auth\Models\Usuario;
 use App\Components\Auth\Requests\CredencialRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -28,7 +29,7 @@ class CredencialCrudController extends CrudController
     public function setup()
     {
         //CRUD::setModel(\App\Models\Credencial::class);
-        CRUD::setModel(\App\Components\Auth\Models\Credencial::class);
+        CRUD::setModel(Credencial::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/credencial');
         CRUD::setEntityNameStrings('credencial', 'credenciales');
     }

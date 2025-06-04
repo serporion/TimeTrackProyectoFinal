@@ -31,11 +31,11 @@ class AppServiceProvider extends ServiceProvider
             return Auth::check() ? Auth::user() : null;
         });
 
-        // NGROKPRUEBA
-        /*
+        // NGROKPRUEBA o produccion
+
         if (app()->environment('production') || str_contains(config('app.url'), 'ngrok-free.app')) {
             URL::forceScheme('https');
         }
-        */
+
     }
 }

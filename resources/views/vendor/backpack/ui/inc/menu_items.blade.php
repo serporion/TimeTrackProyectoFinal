@@ -12,3 +12,5 @@
 <x-backpack::menu-item title="Contratos" icon="la la-question" :link="backpack_url('contrato')" />
 <x-backpack::menu-item title="Informes" icon="la la-question" :link="backpack_url('informe')" />
 <x-backpack::menu-item title="Auditorías" icon="la la-question" :link="backpack_url('auditoria')" />
+
+<x-backpack::menu-item title="Fichajes" icon="la la-question" :link="backpack_url('fichaje')" />

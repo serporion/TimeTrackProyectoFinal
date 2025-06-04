@@ -4,6 +4,7 @@ namespace App\Components\Media\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use App\Components\Media\Models\QR;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -26,12 +27,25 @@ class QrEmpleadoController extends Controller
 
         //$tipo = request('tipo', 'entrada'); // o 'salida'
 
+        // Buscamos la credencial del usuario
+        $credencial = DB::table('credenciales')->where('usuario_id', $usuario->id)->value('clave');
+
+        if (!$credencial) {
+            return response()->json(['error' => 'Credencial no encontrada'], 403);
+        }
+
         // Creamos el QR en base de datos
         $qr = QR::create([
-            'contenido' => '', // temporal, lo actualizamos luego
+            'contenido' => '', // Temporal, lo actualizo más abajo en este método.
             'estado' => 'valido',
             'timestamp' => now(),
         ]);
+
+        // Creamos la cadena base para firmar
+        $baseString = "{$usuario->id}|{$qr->id}|{$tipo}";
+
+        // Generamos la firma con la credencial como clave
+        $firma = hash_hmac('sha256', $baseString, $credencial);
 
 
         // Generamos el JSON con datos seguros
@@ -39,12 +53,13 @@ class QrEmpleadoController extends Controller
             'usuario_id' => $usuario->id,
             'tipo' => $tipo,
             'qr_id' => $qr->id,
+            'firma' => $firma,
         ]);
 
-        // Actualizamos la columna contenido del QR en base de datos
+        // Actualizamos la columna contenido con la firma tras usar la credencial en base de datos.
         $qr->update(['contenido' => $contenidoQR]);
 
-        // Generamos el código QR como imagen PNG
+        // Generamos el código QR como imagen SVG
         //$image = QrCode::format('png')->size(300)->generate($contenidoQR);
         $svg = (string) QrCode::format('svg')->size(300)->generate($contenidoQR);
 

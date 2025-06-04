@@ -132,7 +132,9 @@ Route::get('/informes/exportar', [ExportacionController::class, 'index'])->name(
 Route::post('/informes/exportar', [ExportacionController::class, 'generar'])->name('exportar.generar');
 Route::get('/informes/exportar/{archivo}', [ExportacionController::class, 'descargar'])->name('exportar.descargar');
 
-Route::post('/foto', [FotoController::class, 'store'])->name('foto.store');
+//Route::post('/foto', [FotoController::class, 'store'])->name('foto.store');
+Route::middleware(['auth'])->post('/foto', [FotoController::class, 'store'])->name('foto.store');
+
 
 Route::get('/cert', function () {
     dd(openssl_get_cert_locations());

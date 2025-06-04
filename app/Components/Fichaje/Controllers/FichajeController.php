@@ -53,6 +53,8 @@ class FichajeController extends Controller
 
         //dd($request);
         $qrData = json_decode($request->input('qr_data'), true);
+
+        /*
         $clave = $request->input('clave'); //tokenPX
 
         //Validación de credencial del usuario
@@ -60,16 +62,45 @@ class FichajeController extends Controller
             ->where('usuario_id', $qrData['usuario_id'])
             ->first();
 
+        Log::debug('Validando credencial', [
+            'usuario_id' => $qrData['usuario_id'],
+            'clave_recibida' => $clave,
+            'credencial_encontrada' => $credencial?->clave,
+        ]);
+
+
         if (!$credencial || !hash_equals($credencial->clave, $clave)) {
             return response()->json([
                 'error' => 'Token de autenticación inválido o faltante.'
             ], 403);
         }
 
+        */
+
+        // Validación de firma HMAC con credencial
+        $credencial = DB::table('credenciales')
+            ->where('usuario_id', $qrData['usuario_id'])
+            ->value('clave');
+
+        if (!$credencial) {
+            return response()->json([
+                'error' => 'Credencial no encontrada.'
+            ], 403);
+        }
+
+        $baseString = "{$qrData['usuario_id']}|{$qrData['qr_id']}|{$qrData['tipo']}";
+        $firmaEsperada = hash_hmac('sha256', $baseString, $credencial);
+
+        // Comparar la firma recibida vs la esperada
+        if (!isset($qrData['firma']) || !hash_equals($firmaEsperada, $qrData['firma'])) {
+            return response()->json([
+                'error' => 'QR manipulado o firma inválida.'
+            ], 403);
+        }
+
+
         $tipoEsperado = $this->fichajeService->tipoEsperadoFichaje($qrData['usuario_id']);
         $tipoQr = $qrData['tipo'];
-
-
 
         /*
         $request->merge([
@@ -128,7 +159,7 @@ class FichajeController extends Controller
         ]);
 
         if ($tipoEsperado !== $tipoQr) {
-            $advertencia = "⚠️ El sistema esperaba un fichaje de tipo '$tipoEsperado', pero el QR indica '$tipoQr'. El registro se ha guardado igualmente.";
+            $advertencia = "️ El sistema esperaba un fichaje de tipo '$tipoEsperado', pero el QR indica '$tipoQr'. El registro se ha guardado igualmente. Consulte al departamento de RRHH";
 
             Log::warning('Discrepancia en tipo de fichaje detectada', [
                 'fichaje_id' => $fichaje->id,
@@ -164,13 +195,13 @@ class FichajeController extends Controller
         /*
 
         if ($yaFichado && $fichaje->tipo === 'salida') {
-            $advertencia = '⚠️ Ya has registrado una salida hoy. Verifica si es correcto o contacta con RRHH.';
+            $advertencia = ' Ya has registrado una salida hoy. Verifica si es correcto o contacta con RRHH.';
         }
         */
 
 
         if ($yaFichado && $fichaje->tipo === 'salida') {
-            $advertencia = '⚠️ Ya has registrado una salida hoy. Verifica si es correcto o contacta con RRHH.';
+            $advertencia = '️ Ya has registrado una salida hoy. Verifica si es correcto o contacta con RRHH.';
 
             Log::warning('Advertencia de fichaje duplicado', [
                 'fichaje_id' => $fichaje->id,
@@ -187,7 +218,7 @@ class FichajeController extends Controller
             $salidaHora = Carbon::parse($fichaje->timestamp);
 
             if ($entradaHora->diffInHours($salidaHora) > 10) {
-                $advertencia = '⚠️ Se ha detectado un posible error: hay más de 10 horas entre la entrada y esta salida. Por favor, comunícate con RRHH para regularizar tu jornada.';
+                $advertencia = ' Se ha detectado un posible error: hay más de 10 horas entre la entrada y esta salida. Por favor, comunícate con RRHH para regularizar tu jornada.';
             }
 
             Log::warning('Fichaje con posible error de jornada prolongada', [
@@ -201,9 +232,13 @@ class FichajeController extends Controller
 
         }
 
+        $usuario = DB::table('usuarios')->where('id', $fichaje->usuario_id)->first();
+
+
         return response()->json([
             'message' => 'Fichaje registrado correctamente',
             'fichaje' => $fichaje,
+            'nombre' => $usuario?->name ?? null,
             'advertencia' => $advertencia,
         ]);
     }

@@ -4,30 +4,7 @@ import {QrcodeStream} from 'vue-qrcode-reader'
 
 const result = ref('')
 
-const emit = defineEmits(['fichaje-completo'])
-
-//paso1
-/*
-function onDetect(detectedCodes) {
-
-    //Comun
-    /*
-    try {
-        new Audio('/notification.mp3').play()
-    } catch (e) {
-        console.warn('[DEBUG] No se pudo reproducir sonido:', e)
-    }
-
-
-
-    if (detectedCodes.length) {
-        result.value = detectedCodes[0].rawValue
-        console.log('✅ QR detectado:', result.value)
-        alert(`✅ QR detectado: ${result.value}`)
-
-        emit('fichaje-completo', result.value)
-    }
-}*/
+const emit = defineEmits(['fichaje-completo', 'error'])
 
 function onDetect(detectedCodes) {
     if (!detectedCodes.length) return;
@@ -38,23 +15,24 @@ function onDetect(detectedCodes) {
     let qrData;
     try {
         qrData = JSON.parse(contenido);
-        console.log('Datos del QR:', qrData)
+        console.log('Datos decodificados:', qrData)
+
+        if (!qrData.usuario_id) {
+            emit('error', 'El QR no contiene un usuario_id válido.');
+            return;
+        }
+
+        emit('fichaje-completo', qrData); // Lo paso al padre para usarlo.
     } catch (e) {
-        alert('❌ QR inválido o mal formado. Asegúrate de escanear un código válido.');
-        return;
+        //alert('❌ QR inválido o mal formado. Asegúrate de escanear un código válido.');
+        emit('error', 'QR inválido o mal formado. Asegúrate de escanear un código válido.')
+
     }
-
-    // Puedes mostrar info del QR si quieres
-    console.log('📦 Datos decodificados:', qrData);
-    alert(`✅ QR válido\n\nUsuario: ${qrData.usuario_id || 'desconocido'}`);
-
-    emit('fichaje-completo', qrData); // Lo paso al padre para usarlo.
 }
 
-
-
 function onError(error) {
-    alert('❌ Error cámara: ' + (error.message || error))
+    //alert('❌ Error cámara: ' + (error.message || error))
+    emit('error', 'Error de cámara: ' + (error.message || 'desconocido'))
     console.error(error)
 }
 
