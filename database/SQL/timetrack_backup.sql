@@ -398,7 +398,7 @@ DROP TABLE IF EXISTS `qrs`;
 CREATE TABLE `qrs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `contenido` varchar(255) COLLATE utf8mb4_spanish_ci NOT NULL,
-  `estado` enum('valido','expirado') COLLATE utf8mb4_spanish_ci NOT NULL,
+  `estado` enum('valido','expirado','confirmado') COLLATE utf8mb4_spanish_ci NOT NULL,
   `timestamp` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;

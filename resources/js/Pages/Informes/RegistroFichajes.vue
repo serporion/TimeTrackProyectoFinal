@@ -1,5 +1,5 @@
 <script setup xmlns="http://www.w3.org/1999/html">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 
 import Navbar from "@/Components/Landing/Navbar.vue";
@@ -29,6 +29,15 @@ const handleFiltrar = (filtros) => {
         replace: true,
     });
 };
+
+
+onMounted(() => {
+    console.log('🔗 Enlaces de paginación:')
+    page.props.fichajes?.links?.forEach((link, i) => {
+        console.log(`[${i}] Label: ${link.label}, URL: ${link.url}`)
+    })
+})
+
 
 /*
 const currentPage = ref(1);

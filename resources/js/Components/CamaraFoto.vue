@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted, useAttrs } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { route } from 'ziggy-js'
 
 const props = defineProps({
     nombreEmpleado: [String, Number]
@@ -15,12 +16,16 @@ const canvas = ref(null)
 let stream = null
 
 onMounted(async () => {
+
+    //console.log('Ruta foto.store:', route('foto.store'));
+    //console.log('CSRF Token:', document.querySelector('meta[name="csrf-token"]')?.content)
+
     try {
-        // 🟢 Solicita acceso a la cámara
+        // Se pide acceso a la cámara
         stream = await navigator.mediaDevices.getUserMedia({ video: true })
         video.value.srcObject = stream
 
-        // 🕒 Espera breve y luego captura automáticamente
+        // Pongo un delay breve y luego capturo la imagen.
         setTimeout(() => {
             capturarYSubir()
         }, 1500)
@@ -61,13 +66,15 @@ const capturarYSubir = async () => {
 
 
     try {
-        const res = await fetch('/foto', {
+        //const res = await fetch('/foto', {
+        //const res = await fetch(route('foto.store'), {
+        const res = await fetch(`${window.location.origin}/foto`, {
             method: 'POST',
             body: formData,
             credentials: 'include',
-            //headers: { //NGROKPRUEBA
-            //    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            //}
+            headers: { //NGROKPRUEBA
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
         })
 
         /*

@@ -44,7 +44,8 @@ onMounted(async () => {
 
     usuarioId.value = data.usuario_id //PruebaFichaje
 
-    intervalId = setInterval(verificarFichaje, 2000)
+    intervalId = setInterval(verificarFichaje, 2000) //Polling. Dará errores si se abre en el mismo dispositivo el
+                                                            //terminal que lee qr, como el terminal que construye el qr.
 })
 
 const verificarFichaje = async () => {
@@ -57,6 +58,8 @@ const verificarFichaje = async () => {
         }
     })
     */
+
+    console.log('HOLLLLAAAAAAAA')
 
     const res = await fetch(route('qr.verificar-fichaje', qrId.value))
     const data = await res.json()
@@ -128,7 +131,7 @@ const ficharManual = async () => {
 </script>
 
 <template>
-    <Head title="Fichar | "/>
+    <Head title="Fichar "/>
     <div class="min-h-screen">
         <Navbar />
         <div class="flex-grow">

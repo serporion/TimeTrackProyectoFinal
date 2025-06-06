@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Consentimiento - TimeTrack')</title>
-    <!--@vite('resourceSs/css/style.css') //CSSCAMBIO-->
+    {{-- @vite('resourceSs/css/style.css') //CSSCAMBIO --}}
     @vite('resources/js/landing.js')
 </head>
 <body>

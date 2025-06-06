@@ -558,7 +558,7 @@ footer .text {
   font-size: clamp(13px, 12.5454545455px + 0.4545454545vw, 13px) !important;
 }
 footer .bi {
-  font-size: clamp(15px, 13.9090909091px + 0.3409090909vw, 18px) !important;
+  /*font-size: clamp(15px, 13.9090909091px + 0.3409090909vw, 18px) !important;*/
 }
 /* Dispositivos tablet y desktop */
 @media (min-width: 768px) {
@@ -620,8 +620,8 @@ footer .bi {
     width: 100%;
   }
   footer {
-	height: 6.5rem !important;
-    padding: 0.5rem !important;
+	/*height: 6.5rem !important;
+    padding: 0.5rem !important;*/
   }
   footer .text {
 	padding-top: 0.5rem;

@@ -30,6 +30,7 @@ pnpm-lock.yaml
 /storage/framework/sessions/*
 /storage/framework/views/*
 /storage/logs/*
+/bootstrap-prod
 
 # PHPUnit / tests
 .phpunit.cache

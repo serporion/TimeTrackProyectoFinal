@@ -136,15 +136,20 @@ class FichajeController extends Controller
         $qr = QR::findOrFail($qrData['qr_id']);
 
         if (!$qr) {
-            return response()->json(['error' => 'QR no encontrado'], 404);
+            return response()->json(['error' => 'QR no encontrado']);
         }
 
 
         if ($qr->estado === 'expirado') {
-            return response()->json(['error' => 'QR expirado'], 410);
+            return response()->json(['error' => 'expirado']);
         }
-        if ($qr->estado === 'usado') {
-            return response()->json(['error' => 'QR ya usado'], 409);
+        if ($qr->estado === 'confirmado') {
+            return response()->json(['error' => 'QR ya usado']);
+        }
+
+        if ($qr->timestamp->diffInSeconds(now()) > 15) {
+            $qr->update(['estado' => 'expirado']);
+            return response()->json(['estado' => 'expirado']);
         }
 
         $fotoId = $qrData['foto_id'] ?? null; //nuevo
@@ -236,6 +241,7 @@ class FichajeController extends Controller
 
 
         return response()->json([
+            'estado' => 'confirmado',
             'message' => 'Fichaje registrado correctamente',
             'fichaje' => $fichaje,
             'nombre' => $usuario?->name ?? null,
@@ -266,11 +272,24 @@ class FichajeController extends Controller
             return response()->json(['estado' => 'no_existe']);
         }
 
-        $expirado = now()->diffInSeconds($qr->timestamp) > 5;
+        $expirado = $qr->timestamp->diffInSeconds(now()) > 15;
+
+        Log::info('Expirado?', [
+            'qr_id' => $qrId,
+            'expirado' => $expirado,
+            'timestamp_qr' => $qr->timestamp->toDateTimeString(),
+            'ahora' => now()->toDateTimeString(),
+            'diff' => $qr->timestamp->diffInSeconds(now()),
+        ]);
+
 
         if ($expirado) {
             $qr->update(['estado' => 'expirado']);
             return response()->json(['estado' => 'expirado']);
+        }
+
+        if ($qr->estado === 'confirmado') {
+            return response()->json(['estado' => 'ya_usado']);
         }
 
         $fichaje = Fichaje::where('qr_id', $qrId)->first();
@@ -278,6 +297,8 @@ class FichajeController extends Controller
         if (!$fichaje) {
             return response()->json(['estado' => 'esperando']);
         }
+
+        $qr->update(['estado' => 'confirmado']);
 
         return response()->json([
             'estado' => 'confirmado',

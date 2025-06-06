@@ -1,5 +1,7 @@
 <?php
 
+use App\Components\Auth\Models\Credencial;
+use App\Components\Auth\Models\Usuario;
 use App\Components\Fichaje\Controllers\FichajeController;
 use App\Components\Media\Controllers\FotoController;
 use App\Components\Media\Controllers\QrEmpleadoController;
@@ -9,7 +11,9 @@ use App\Components\Fichaje\Controllers\ContratoController;
 use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\RedirectIfNoConsent;
+use Carbon\Carbon;
 use Illuminate\Foundation\Application;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,8 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 use App\Components\Informes\Controllers\ExportacionController;
-
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 /*
@@ -138,6 +141,47 @@ Route::middleware(['auth'])->post('/foto', [FotoController::class, 'store'])->na
 
 Route::get('/cert', function () {
     dd(openssl_get_cert_locations());
+});
+
+Route::get('/seed-manual', function () {
+    DB::table('usuarios')->insert([
+        ['id' => 1, 'name' => 'Jose Pinero', 'dni' => '000000001', 'email' => 'jose@test.com', 'password' => bcrypt('josetest'), 'role' => 'empleado', 'consiente_datos' => 0],
+        ['id' => 2, 'name' => 'Paqui', 'dni' => '000000002', 'email' => 'paqui@test.com', 'password' => bcrypt('paquitest'), 'role' => 'empleado', 'consiente_datos' => 0],
+        ['id' => 3, 'name' => 'Pablo', 'dni' => '000000003', 'email' => 'pablo@test.com', 'password' => bcrypt('pablotest'), 'role' => 'empleado', 'consiente_datos' => 0],
+        ['id' => 4, 'name' => 'Admin Terminal', 'dni' => '000000004', 'email' => 'admin_terminal@test.com', 'password' => bcrypt('terminal'), 'role' => 'administrador', 'consiente_datos' => 1],
+        ['id' => 5, 'name' => 'Admin Completo', 'dni' => '000000005', 'email' => 'admin_completo@test.com', 'password' => bcrypt('completo'), 'role' => 'administrador', 'consiente_datos' => 1],
+        ['id' => 6, 'name' => 'Alicia', 'dni' => '000000006', 'email' => 'alicia@test.com', 'password' => bcrypt('aliciatest'), 'role' => 'empleado', 'consiente_datos' => 0],
+    ]);
+
+    $usuarios = Usuario::whereIn('id', [1, 2, 3, 4, 5])->get();
+
+    foreach ($usuarios as $usuario) {
+        $token = JWTAuth::fromUser($usuario);
+        Credencial::updateOrCreate(
+            ['usuario_id' => $usuario->id],
+            ['clave' => $token]
+        );
+    }
+
+    // Contratos
+    DB::table('contratos')->insert([
+        ['usuario_id' => 1, 'horas' => 20, 'fecha_inicio' => '2024-12-03 18:30:37', 'fecha_fin' => '2025-05-02 18:30:37'],
+        ['usuario_id' => 1, 'horas' => 40, 'fecha_inicio' => Carbon::now()],
+        ['usuario_id' => 2, 'horas' => 20, 'fecha_inicio' => Carbon::now()],
+        ['usuario_id' => 3, 'horas' => 20, 'fecha_inicio' => Carbon::now()],
+        ['usuario_id' => 6, 'horas' => 40, 'fecha_inicio' => Carbon::now()],
+    ]);
+
+    // Permisos
+    DB::table('permisos')->insert([
+        ['usuario_id' => 4, 'permiso' => 'gestionar_inicio'],
+        ['usuario_id' => 5, 'permiso' => 'gestionar_usuarios'],
+        ['usuario_id' => 5, 'permiso' => 'gestionar_fichajes'],
+        ['usuario_id' => 5, 'permiso' => 'gestionar_permisos'],
+        ['usuario_id' => 5, 'permiso' => 'gestionar_inicio'],
+    ]);
+
+    return 'Usuarios y credenciales creados correctamente.';
 });
 
 require __DIR__.'/auth.php';

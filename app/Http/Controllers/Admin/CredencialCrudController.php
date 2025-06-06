@@ -49,7 +49,7 @@ class CredencialCrudController extends CrudController
             'type' => 'select',
             'label' => 'Usuario',
             'entity' => 'usuario',
-            'model' => \App\Components\Auth\Models\Usuario::class,
+            'model' => Usuario::class,
             'attribute' => 'email',
         ]);
     }

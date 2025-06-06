@@ -15,6 +15,10 @@ class QR extends Model
         'timestamp',
     ];
 
+    protected $casts = [
+        'timestamp' => 'datetime',
+    ];
+
     public $timestamps = false;
 
     public function fichaje()

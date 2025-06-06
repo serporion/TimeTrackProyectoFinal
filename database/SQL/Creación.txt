@@ -57,7 +57,7 @@ CREATE TABLE administradores (
 CREATE TABLE qrs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     contenido VARCHAR(255) NOT NULL,
-    estado ENUM('valido', 'expirado') NOT NULL,
+    estado ENUM('valido', 'expirado', 'confirmado') NOT NULL,
     timestamp DATETIME NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 

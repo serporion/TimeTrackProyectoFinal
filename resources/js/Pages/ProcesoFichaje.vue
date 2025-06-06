@@ -141,23 +141,48 @@ async function enviarFichaje() {
 
         const json = await res.json()
 
-        if (json.error) {
-            console.log(`⛔ Error: ${json.error}`)
-            mensajeFinal.value = `⛔ Error: ${json.error}`
-        } else {
-            //mensajeFinal.value = '✅ Fichaje completado correctamente'
-            mensajeFinal.value = `✅ Fichaje completado correctamente\n👋 Hola, ${json.nombre}`
+        /*
+            if (json.error) {
+                console.log(`⛔ Error: ${json.error}`)
+                mensajeFinal.value = `⛔ Error: ${json.error}`
+            } else {
+                //mensajeFinal.value = '✅ Fichaje completado correctamente'
+                mensajeFinal.value = `✅ Fichaje completado correctamente\n👋 Hola, ${json.nombre}`
+
+                if (json.advertencia) {
+                    //alert(json.advertencia)
+                    mensajeFinal.value += `\n\n⚠️ ${json.advertencia}`
+                }
+                try {
+                    new Audio('/notification.m4a').play()
+                } catch (e) {
+                    console.warn('[DEBUG] No se pudo reproducir sonido:', e)
+                }
+            }
+        */
+
+        if (json.estado === 'ya_usado') {
+            mensajeFinal.value = '⚠️ Este código QR ya ha sido usado. Pide uno nuevo.'
+        } else if (json.estado === 'expirado') {
+            mensajeFinal.value = '⏱️ El código QR ha expirado. Vuelva a generar uno nuevo.'
+        } else if (json.estado === 'no_existe') {
+            mensajeFinal.value = '❌ QR no válido o no encontrado.'
+        } else if (json.estado === 'confirmado') {
+            mensajeFinal.value = `✅ Fichaje completado correctamente\n👋 Hola, ${json.nombre || ''}`
 
             if (json.advertencia) {
-                //alert(json.advertencia)
                 mensajeFinal.value += `\n\n⚠️ ${json.advertencia}`
             }
+
             try {
                 new Audio('/notification.m4a').play()
             } catch (e) {
                 console.warn('[DEBUG] No se pudo reproducir sonido:', e)
             }
+        } else {
+            mensajeFinal.value = '❌ Error desconocido al registrar el fichaje.'
         }
+
     } catch (err) {
         mensajeFinal.value = '❌ Error al registrar el fichaje'
         console.error(err)
