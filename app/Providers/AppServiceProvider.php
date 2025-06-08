@@ -33,9 +33,26 @@ class AppServiceProvider extends ServiceProvider
 
         // NGROKPRUEBA o produccion
 
+        /*
         if (app()->environment('production') || str_contains(config('app.url'), 'ngrok-free.app')) {
             URL::forceScheme('https');
         }
+        */
+        /*
+        if (app()->environment('production') || str_contains(request()->getHttpHost(), 'ngrok-free.app')) {
+            URL::forceScheme('https');
+            $this->app['request']->server->set('HTTPS', 'on');
+        }
+        */
+
+        if (
+            app()->environment('production') ||
+            str_contains(request()->getHttpHost(), 'ngrok-free.app')
+        ) {
+            URL::forceScheme('https');
+            $this->app['request']->server->set('HTTPS', 'on');
+        }
+
 
     }
 }

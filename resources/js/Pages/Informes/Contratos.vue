@@ -27,7 +27,7 @@ const contratosFiltrados = computed(() => {
     <Head title="Contratos" />
     <div class="min-h-screen flex flex-col">
         <Navbar />
-        <div class="flex-grow hero bg-gradient-to-br from-blue-500 to-cyan-400">
+        <div id="hero-bg-contratos" class="flex-grow hero"> <!-- bg-gradient-to-br from-blue-500 to-cyan-400">-->
             <div class="hero-overlay bg-opacity-10"></div>
             <div class="hero-content flex flex-col items-start px-3 py-6 sm:px-6 md:px-12 w-full max-w-2xl mx-auto">
                 <div class="flex items-end gap-4 mb-4 mt-8">
@@ -102,6 +102,11 @@ const contratosFiltrados = computed(() => {
 </template>
 
 <style scoped>
+
+    #hero-bg-contratos {
+        background: linear-gradient(135deg, #3b82f6 0%, #22d3ee 100%) !important;
+    }
+
     select {
         background-color: white;
         color: #333;
@@ -109,8 +114,8 @@ const contratosFiltrados = computed(() => {
 
     .btn-circle {
         border-radius: 50%;
-        width: 2.5rem;
-        height: 2.5rem;
+        width: 2.3rem;
+        height: 2.3rem;
         display: flex;
         align-items: center;
         justify-content: center;

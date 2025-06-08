@@ -68,10 +68,10 @@ const goToNextPage = () => {
     <Head title="Registro de Fichajes" />
     <div class="min-h-screen flex flex-col">
         <Navbar />
-        <div class="flex-grow hero bg-gradient-to-br from-blue-500 to-cyan-400">
+        <div id="hero-bg-registro" class="flex-grow hero">
             <div class="hero-overlay bg-opacity-10"></div>
-            <div class="hero-content flex flex-col items-start px-2 py-6 sm:px-6 md:px-12 w-full max-w-2xl mx-auto">
-                    <div class="flex items-end gap-3 mt-8 mb-4">
+            <div class="hero-content flex flex-col items-start px-2 py-4 sm:px-6 md:px-12 w-full max-w-2xl mx-auto">
+                    <div id="registroFi-informes" class="flex gap-3 mt-8 mb-4">
                         <a href="/informes" class="btn btn-sm ml-1 btn-circle bg-white text-blue-600 hover:bg-gray-100">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
@@ -83,6 +83,7 @@ const goToNextPage = () => {
                     <button
                         @click="mostrarFiltros = !mostrarFiltros"
                         class="ml-1 mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+                        style="font-size: 0.85rem;"
                     >
                         {{ mostrarFiltros ? 'Ocultar filtros' : 'Mostrar filtros' }}
                     </button>
@@ -162,25 +163,34 @@ const goToNextPage = () => {
 
 <style scoped>
 
-.btn-circle {
-    border-radius: 50%;
-    width: 2.5rem;
-    height: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-}
+    #hero-bg-registro {
+        background: linear-gradient(135deg, #3b82f6 0%, #22d3ee 100%) !important;
+    }
 
-@media (max-width: 768px) {
-    table {
-        font-size: 0.70rem;
+    #registroFi-informes {
+        align-items: flex-end;
     }
-    th, td {
-        padding: 0.1rem;
+
+
+    .btn-circle {
+        border-radius: 50%;
+        width: 2.3rem;
+        height: 2.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
     }
-    input, button, label, option, select {
-        font-size: 0.70rem;
+
+    @media (max-width: 768px) {
+        table {
+            font-size: 0.70rem;
+        }
+        th, td {
+            padding: 0.1rem;
+        }
+        input, button, label, option, select {
+            font-size: 0.70rem;
+        }
     }
-}
 </style>

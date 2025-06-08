@@ -20,7 +20,7 @@ import Footer from '@/Components/Landing/Footer.vue'
 
 <style scoped>
 .landing-layout {
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
 }

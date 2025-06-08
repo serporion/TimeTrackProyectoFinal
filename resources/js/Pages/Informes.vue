@@ -1,11 +1,19 @@
 <script setup>
-import { ref } from 'vue'
+import {computed, ref} from 'vue'
 import Navbar from "@/Components/Landing/Navbar.vue";
 import Footer from "@/Components/Landing/Footer.vue";
-import { Head } from "@inertiajs/vue3";
+import {Head, usePage} from "@inertiajs/vue3";
 import { router } from '@inertiajs/vue3';
 
 const current = ref('')
+
+const page = usePage()
+const user = computed(() => page.props.auth?.user)
+const permisos = computed(() => page.props.auth?.permisos || [])
+
+const isAdmin = computed(() =>
+    user.value?.role === 'administrador' && permisos.value.includes('gestionar_fichajes')
+)
 
 const navigate = (route) => {
     router.visit(route);
@@ -44,6 +52,7 @@ const navigate = (route) => {
                         Contratos
                     </button>
                     <button
+                        v-if="isAdmin"
                         @click="navigate('/informes/exportar')"
                         class="btn btn-lg py-2.5 rounded-pill border-0 fw-bold text-white"
                         style="background: linear-gradient(135deg, #3a7bd5, #00d2ff); box-shadow: 0 4px 15px rgba(58, 123, 213, 0.4);"

@@ -183,5 +183,13 @@ Route::get('/seed-manual', function () {
 
     return 'Usuarios y credenciales creados correctamente.';
 });
+/*
+Route::get('/errors/404', function () {
+    return inertia('Errors/404');
+})->name('errors.404');
+*/
 
+Route::fallback(function () {
+    return inertia('Errors/404')->withViewData(['status' => 404]);
+});
 require __DIR__.'/auth.php';

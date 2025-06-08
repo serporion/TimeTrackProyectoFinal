@@ -70,14 +70,27 @@ class InformeController extends Controller
 
     public function horasTrabajadas(Request $request)
     {
-        $user = auth()->user();
+        //$user = auth()->user();
+        $authUser = auth()->user();
+        $usuarioId = $request->input('usuario_id');     //nuevoHoras
+
+        if ($authUser->isAdmin() && $usuarioId) {   //nuevoHoras
+            $user = Usuario::findOrFail($usuarioId);
+        } else {
+            $user = $authUser;
+        }
+
         $mes = $request->input('mes');
         $anio = $request->input('anio');
 
         if (!$mes || !$anio) {
             return Inertia::render('Informes/HorasTrabajadas', [
                 'semanas' => [],
-                'resumen' => null
+                'resumen' => null,
+                'usuarios' => $user->isAdmin()  //nuevoHoras
+                    ? Usuario::select('id', 'name')->orderBy('name')->get()
+                    : [],
+                'usuarioId' => $usuarioId,
             ]);
         }
 
@@ -165,7 +178,8 @@ class InformeController extends Controller
             'diferencia' => number_format($diferencia, 2),
             /*
             'diferencia_legibles' => ($diferencia >= 0 ? '' : '-') .
-                abs(floor($diffMin / 60)) . 'h ' . (abs($diffMin) % 60) . 'min'*/
+                abs(floor($diffMin / 60)) . 'h ' . (abs($diffMin) % 60) . 'min'
+            */
             'diferencia_legibles' => sprintf(
                 '%s%dh %dmin',
                 ($diferencia < 0 ? '-' : ''),
@@ -176,7 +190,11 @@ class InformeController extends Controller
 
         return Inertia::render('Informes/HorasTrabajadas', [
             'semanas' => $detalleSemanas,
-            'resumen' => $resumen
+            'resumen' => $resumen,
+            'usuarios' => $authUser->isAdmin() //nuevoHoras
+                ? Usuario::select('id', 'name')->orderBy('name')->get()
+                : [],
+            'usuarioId' => $usuarioId,
         ]);
     }
 

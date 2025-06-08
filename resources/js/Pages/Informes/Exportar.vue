@@ -28,7 +28,7 @@ const generar = () => {
     <Head title="Exportar Horarios" />
     <div class="min-h-screen flex flex-col bg-gray-50">
         <Navbar />
-        <div class="flex-grow hero bg-gradient-to-br from-blue-500 to-cyan-400">
+        <div id="hero-bg-exportar" class="flex-grow hero">
             <div class="hero-overlay bg-opacity-10"></div>
             <div class="hero-content flex flex-col items-start px-3 py-6 sm:px-6 md:px-12 w-full max-w-2xl mx-auto">
                 <div class="flex items-end gap-3 mb-4 mt-8 w-full">
@@ -98,10 +98,14 @@ const generar = () => {
 
 <style scoped>
 
+    #hero-bg-exportar {
+        background: linear-gradient(135deg, #3b82f6 0%, #22d3ee 100%) !important;
+    }
+
     .btn-circle {
         border-radius: 50%;
-        width: 2.2rem;
-        height: 2.2rem;
+        width: 2.3rem;
+        height: 2.3rem;
         display: flex;
         align-items: center;
         justify-content: center;
