@@ -1,8 +1,18 @@
 <script setup>
 
+import { onMounted } from 'vue';
+import { Carousel } from 'bootstrap';
+
 import cliente1 from '../../../img/cliente1.jpg'
 import cliente2 from '../../../img/cliente2.jpg'
 import cliente3 from '../../../img/cliente3.jpg'
+
+onMounted(() => {
+    new Carousel(document.getElementById('testimonialCarousel'), {
+        interval: 3000, // Cambia cada 3 segundos
+        ride: 'carousel' // Autoplay
+    });
+});
 
 const opiniones = [
     {
@@ -26,7 +36,7 @@ const opiniones = [
 <template>
     <section id="opiniones" class="pb-0.5">
         <div class="container">
-            <h2 class="text-left mb-4">Lo que dicen nuestros clientes</h2>
+            <h2 class="font-bold text-base sm:text-lg md:text-xl lg:text-2xl mb-10 inline-block relative">Lo que dicen nuestros clientes</h2>
             <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <div

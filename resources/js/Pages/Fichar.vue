@@ -17,20 +17,7 @@ let intervalId = null
 
 onMounted(async () => {
     const token = localStorage.getItem('token')
-
-    // 1. Obtener tipo + timestamp + ID real del QR
-    //const res = await fetch('/api/empleado/proximo-fichaje', {
-
-    /*
-    const res = await fetch(route('qr.datos-fichaje'), {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-    */
-
     const res = await fetch(route('qr.datos-fichaje'))
-
     const data = await res.json()
 
     tipo.value = data.tipo
@@ -41,7 +28,6 @@ onMounted(async () => {
 
     qrSvg.value = data.svg
 
-
     usuarioId.value = data.usuario_id //PruebaFichaje
 
     intervalId = setInterval(verificarFichaje, 2000) //Polling. Dará errores si se abre en el mismo dispositivo el
@@ -49,17 +35,6 @@ onMounted(async () => {
 })
 
 const verificarFichaje = async () => {
-    //const res = await fetch(`/api/empleado/fichaje-confirmado/${qrId.value}`, {
-
-    /*
-    const res = await fetch(route('qr.verificar-fichaje', qrId.value), {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-    })
-    */
-
-    console.log('HOLLLLAAAAAAAA')
 
     const res = await fetch(route('qr.verificar-fichaje', qrId.value))
     const data = await res.json()
@@ -71,12 +46,12 @@ const verificarFichaje = async () => {
 
     if (data.estado === 'expirado') {
         clearInterval(intervalId)
-        alert('⚠️ El QR ha expirado. Genera uno nuevo.')
-        router.visit('/dashboard') // Redirige al inicio del empleado
+        alert('⚠️ El QR ha expirado. Genera uno nuevo navegando a "Fichar" ')
+        //router.visit('/dashboard') // Redirige al inicio.
     }
 }
 
-//PruebaFichaje. Todo el método.
+// PruebaFichaje. No para producción.
 const ficharManual = async () => {
 
     const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -99,9 +74,7 @@ const ficharManual = async () => {
     }))
     */
 
-
-
-    // No enviamos imagen real
+    // No enviamos imagen real. Modo prueba
     /*
     const res = await fetch('/api/fichaje/completo', {
         method: 'POST',
@@ -128,6 +101,20 @@ const ficharManual = async () => {
     }
 }
 
+const salirAYuda = () => {
+    clearInterval(intervalId)
+    router.visit(route('ayuda.fichaje'))
+}
+
+const salirAContacto = () => {
+    clearInterval(intervalId)
+    router.visit(route('contacto', {
+        desdeBotonProblemas: true,
+        departamento: 'soporte',
+        mensajePredeterminado: `Estoy teniendo problemas con mi fichaje. Pónganse en contacto conmigo. Gracias`
+    }))
+}
+
 </script>
 
 <template>
@@ -147,29 +134,26 @@ const ficharManual = async () => {
                 <div class=" border-2 border-gray-300 rounded-xl p-4 shadow-md animate-fade-in max-w-xs w-full v-html" v-html="qrSvg"></div>
 
                 <!-- //PruebaFichaje -->
-                <div class="d-flex align-items-center justify-content-center w-75 gap-3 pb-3">
+                <div class="flex items-center justify-center w-3/4 gap-3 py-3">
                     <button
-                        class="btn btn-success"
+                        class="hidden bg-green-600 hover:bg-green-700 text-white font-semibold text-sm px-6 py-3 rounded-lg shadow"
                         @click="ficharManual"
                     >
                         Fichar ahora (modo prueba)
                     </button>
                     <button
-                        class="btn btn-success"
-                        @click="ficharManual"
+                        class="bg-green-600 hover:bg-green-700 text-white font-semibold text-sm px-6 py-2.5 rounded-lg shadow"
+                        @click="salirAYuda"
                     >
-                        FAQ´s (Dudas)
+                        ¿Dudas?
                     </button>
                     <button
-                        class="btn btn-success"
-                        @click="router.visit(route('contacto', {
-                            departamento: 'soporte',
-                            mensajePredeterminado: `Estoy teniendo problemas con mi fichaje. Pónganse en contacto conmigo. Gracias`}))"
+                        class="bg-green-600 hover:bg-green-700 text-white font-semibold text-sm px-6 py-2.5 rounded-lg shadow"
+                        @click="salirAContacto"
                     >
-                    ¿Problemas?
+                        ¿Problemas?
                     </button>
                 </div>
-
             </div>
 
             <div v-if="mensaje" class="alert alert-success mt-4">

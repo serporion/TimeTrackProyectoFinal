@@ -110,7 +110,7 @@ function irAGestionPermisos() {
                             <button v-if="permisos.includes('gestionar_usuarios')"
                                 class="btn btn-lg px-6 py-2.5 rounded-pill border-0 fw-bold"
                                 style="background: linear-gradient(135deg, #3a7bd5, #00d2ff); color: white; box-shadow: 0 4px 15px rgba(58, 123, 213, 0.4);"
-                                @click="goTo('config')"
+                                @click="goTo('configuser')"
                             >
                                 Configuración
                             </button>

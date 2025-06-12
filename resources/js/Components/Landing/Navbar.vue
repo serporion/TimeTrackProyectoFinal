@@ -159,10 +159,10 @@ const cerrarSesion = () => {
                         <!-- Si no está autenticado -->
                         <template v-else>
                             <li class="nav-item"><a class="nav-link" :href="route('landing')">Inicio</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#caracteristicas">Características</a></li>
+                            <li class="nav-item"><a class="nav-link" :href="route('caracteristicas')">Características</a></li>
                             <li class="nav-item"><a class="nav-link" href="#opiniones">Opiniones</a></li>
                             <li class="nav-item"><a class="nav-link" :href="route('contacto')">Contacto</a></li>
-                            <li class="nav-item"><a class="nav-link" :href="route('login')">Login</a></li>
+                            <li class="nav-item"><a class="nav-link d-none d-lg-block" :href="route('login')">Login</a></li>
                         </template>
                     </ul>
                 </div>
@@ -175,7 +175,7 @@ const cerrarSesion = () => {
 <style scoped>
 
     .botonCerrar{
-        background-color: var(--color-heading) !important; /*Si pongo esto se queda feo en movil. Mirarlo*/
+        background-color: var(--color-heading) !important;
     }
 
     .dropdown-item.font-bold{

@@ -45,6 +45,9 @@ class AppServiceProvider extends ServiceProvider
         }
         */
 
+        // En ngrok bien. En adwardspace no. Cambio al código de más abajo y ver si funciona en ngrok. En awardspace SI funciona
+        // He visto ya que no me funciona. Comento la de abajo que es la que está subida a AwardSpace
+
         if (
             app()->environment('production') ||
             str_contains(request()->getHttpHost(), 'ngrok-free.app')
@@ -53,6 +56,14 @@ class AppServiceProvider extends ServiceProvider
             $this->app['request']->server->set('HTTPS', 'on');
         }
 
-
+        /*
+        if (
+            app()->environment('production') &&
+            !str_contains(request()->getHttpHost(), 'atwebpages.com')
+        ) {
+            URL::forceScheme('https');
+            $this->app['request']->server->set('HTTPS', 'on');
+        }
+        */
     }
 }

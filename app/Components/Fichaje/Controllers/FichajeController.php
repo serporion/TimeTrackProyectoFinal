@@ -38,11 +38,7 @@ class FichajeController extends Controller
     //public function registrarCompleto(FichajeRequest $request)
     public function registrarCompleto(Request $request)
     {
-
         $advertencia = null;
-
-
-
 
         /*
         $request->validate([
@@ -51,7 +47,6 @@ class FichajeController extends Controller
         ]);
         */
 
-        //dd($request);
         $qrData = json_decode($request->input('qr_data'), true);
 
         /*
@@ -304,6 +299,50 @@ class FichajeController extends Controller
             'estado' => 'confirmado',
             'tipo' => $fichaje->tipo,
             'hora' => Carbon::parse($fichaje->timestamp)->translatedFormat('l d \d\e F \a \l\a\s H:i'),
+        ]);
+    }
+
+    public function validarQr(Request $request)
+    {
+        $qrData = json_decode($request->input('qr_data'), true);
+
+        $credencial = DB::table('credenciales')
+            ->where('usuario_id', $qrData['usuario_id'])
+            ->value('clave');
+
+        if (!$credencial) {
+            return response()->json([
+                'error' => 'Credencial no encontrada.'
+            ], 403);
+        }
+
+        $baseString = "{$qrData['usuario_id']}|{$qrData['qr_id']}|{$qrData['tipo']}";
+        $firmaEsperada = hash_hmac('sha256', $baseString, $credencial);
+
+        if (!isset($qrData['firma']) || !hash_equals($firmaEsperada, $qrData['firma'])) {
+            return response()->json([
+                'error' => 'QR manipulado o firma inválida.'
+            ], 403);
+        }
+
+        $qr = QR::find($qrData['qr_id']);
+
+        if (!$qr) {
+            return response()->json(['estado' => 'no_existe']);
+        }
+
+        if ($qr->estado === 'confirmado') {
+            return response()->json(['estado' => 'ya_usado']);
+        }
+
+        if ($qr->estado === 'expirado' || $qr->timestamp->diffInSeconds(now()) > 15) {
+            $qr->update(['estado' => 'expirado']);
+            return response()->json(['estado' => 'expirado']);
+        }
+
+        return response()->json([
+            'estado' => 'confirmado',
+            'nombre' => DB::table('usuarios')->where('id', $qrData['usuario_id'])->value('name')
         ]);
     }
 }

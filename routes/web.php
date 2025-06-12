@@ -148,12 +148,12 @@ Route::get('/seed-manual', function () {
         ['id' => 1, 'name' => 'Jose Pinero', 'dni' => '000000001', 'email' => 'jose@test.com', 'password' => bcrypt('josetest'), 'role' => 'empleado', 'consiente_datos' => 0],
         ['id' => 2, 'name' => 'Paqui', 'dni' => '000000002', 'email' => 'paqui@test.com', 'password' => bcrypt('paquitest'), 'role' => 'empleado', 'consiente_datos' => 0],
         ['id' => 3, 'name' => 'Pablo', 'dni' => '000000003', 'email' => 'pablo@test.com', 'password' => bcrypt('pablotest'), 'role' => 'empleado', 'consiente_datos' => 0],
-        ['id' => 4, 'name' => 'Admin Terminal', 'dni' => '000000004', 'email' => 'admin_terminal@test.com', 'password' => bcrypt('terminal'), 'role' => 'administrador', 'consiente_datos' => 1],
-        ['id' => 5, 'name' => 'Admin Completo', 'dni' => '000000005', 'email' => 'admin_completo@test.com', 'password' => bcrypt('completo'), 'role' => 'administrador', 'consiente_datos' => 1],
+        ['id' => 4, 'name' => 'Admin Terminal', 'dni' => '000000004', 'email' => 'terminal@test.com', 'password' => bcrypt('terminal'), 'role' => 'administrador', 'consiente_datos' => 1],
+        ['id' => 5, 'name' => 'Admin Completo', 'dni' => '000000005', 'email' => 'completo@test.com', 'password' => bcrypt('completo'), 'role' => 'administrador', 'consiente_datos' => 1],
         ['id' => 6, 'name' => 'Alicia', 'dni' => '000000006', 'email' => 'alicia@test.com', 'password' => bcrypt('aliciatest'), 'role' => 'empleado', 'consiente_datos' => 0],
     ]);
 
-    $usuarios = Usuario::whereIn('id', [1, 2, 3, 4, 5])->get();
+    $usuarios = Usuario::whereIn('id', [1, 2, 3, 4, 5, 6])->get();
 
     foreach ($usuarios as $usuario) {
         $token = JWTAuth::fromUser($usuario);
@@ -183,13 +183,17 @@ Route::get('/seed-manual', function () {
 
     return 'Usuarios y credenciales creados correctamente.';
 });
-/*
-Route::get('/errors/404', function () {
-    return inertia('Errors/404');
-})->name('errors.404');
-*/
+
+Route::post('/fichaje/validar', [FichajeController::class, 'validarQr'])->name('fichaje.validar');
+
+Route::get('/ayuda-fichaje', function () {
+    return Inertia::render('AyudaFichaje');
+})->name('ayuda.fichaje');
+
+Route::get('/caracteristicas', [ContactoController::class, 'caracteristicas'])->name('caracteristicas');
 
 Route::fallback(function () {
     return inertia('Errors/404')->withViewData(['status' => 404]);
 });
+
 require __DIR__.'/auth.php';

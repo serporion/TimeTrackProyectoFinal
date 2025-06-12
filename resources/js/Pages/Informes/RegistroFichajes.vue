@@ -37,31 +37,6 @@ onMounted(() => {
         console.log(`[${i}] Label: ${link.label}, URL: ${link.url}`)
     })
 })
-
-
-/*
-const currentPage = ref(1);
-const itemsPerPage = 2;
-
-const totalPages = computed(() =>
-    Math.ceil(fichajesFiltrados.value.length / itemsPerPage)
-);
-
-const paginatedFichajes = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage;
-    return fichajesFiltrados.value.slice(start, start + itemsPerPage);
-});
-
-const goToPreviousPage = () => {
-    if (currentPage.value > 1) currentPage.value--;
-};
-
-const goToNextPage = () => {
-    if (currentPage.value < totalPages.value) currentPage.value++;
-};
-*/
-
-
 </script>
 
 <template>

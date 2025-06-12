@@ -18,6 +18,11 @@ const meses = [
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 ];
 
+const verTodos = computed(() => page.props.verTodos || false);
+
+const selectedMes = ref('');
+const selectedAnio = ref('');
+
 </script>
 
 <template>
@@ -35,7 +40,7 @@ const meses = [
                     </a>
                     <h1 class="text-white text-2xl md:text-3xl font-bold">Horas Trabajadas</h1>
                 </div>
-                <!-- Select de usuarios -->
+                <!-- Select de usuarios individual -->
                 <div v-if="isAdmin" class="col-span-2 sm:col-span-1">
                     <label for="usuario_id" class="block font-semibold text-white mb-1">Empleado</label>
                     <select
@@ -44,18 +49,39 @@ const meses = [
                         v-model="usuarioId"
                         class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400"
                     >
-                        <option value="">Todos</option>
+                        <option value="">Elige un empleado</option>
                         <option v-for="u in usuarios" :key="u.id" :value="u.id">
                             {{ u.name }} (ID {{ u.id }})
                         </option>
                     </select>
                 </div>
 
+                <!-- Informe conjunto -->
+                <form method="GET" action="/informes/horas" class="mt-8 w-full">
+                    <input type="hidden" name="mes" :value="selectedMes" />
+                    <input type="hidden" name="anio" :value="selectedAnio" />
+                    <input type="hidden" name="usuario_id" value="" />
+
+                    <!-- Boton inncecesario. Lo hace también Enviar por sí solo.
+                    <h2 class="text-white font-bold mb-2">Ver todos los empleados</h2>
+                    <button
+                        type="submit"
+                        class="btn bg-white text-blue-700 font-semibold rounded shadow hover:bg-gray-100"
+                    >
+                        Ver informe de todos
+                    </button>
+                    -->
+                    <p v-if="isAdmin && !usuarioId" class="text-sm text-white italic mt-2">
+                        * Si no seleccionas un empleado, se generará el informe de todos.
+                    </p>
+
+                </form>
+
                 <!-- Formulario -->
                 <form method="GET" action="/informes/horas" class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 w-full mb-6">
                     <div>
                         <label for="mes" class="block font-semibold text-white mb-1">Mes</label>
-                        <select name="mes" id="mes" class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400">
+                        <select v-model="selectedMes" name="mes" id="mes" class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400">
                             <option v-for="(nombre, index) in meses" :key="index" :value="index + 1">
                                 {{ nombre }}
                             </option>
@@ -63,7 +89,7 @@ const meses = [
                     </div>
                     <div>
                         <label for="anio" class="block font-semibold text-white mb-1">Año</label>
-                        <select name="anio" id="anio" class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400">
+                        <select v-model="selectedAnio" name="anio" id="anio" class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400">
                             <option v-for="a in anios" :key="a" :value="a">{{ a }}</option>
                         </select>
                     </div>
@@ -71,14 +97,51 @@ const meses = [
                     <input type="hidden" name="usuario_id" :value="usuarioId" />
 
                     <div class="flex items-end">
-                        <button id="btn-enviar" type="submit" class="btn w-full font-semibold py-2 mt-4 rounded transition text-white">
+                        <button id="btn-enviar" type="submit" class="btn w-full font-semibold py-2 mt-0 rounded transition text-white">
                             Enviar
                         </button>
                     </div>
                 </form>
 
+                <!-- MOSTRAR TODOS LOS EMPLEADOS -->
+                <div v-if="verTodos && $page.props.resumenes" class="w-full space-y-8">
+                    <div v-for="dato in $page.props.resumenes" :key="dato.usuario_id" class="bg-white p-4 rounded shadow">
+                        <h2 class="text-lg font-bold mb-2">Empleado: {{ dato.nombre }}</h2>
+
+                        <ul>
+                            <li v-for="(info, semana) in dato.semanas" :key="semana">
+                                Semana que comienza el <strong>{{ semana }}</strong>:
+                                <span class="text-blue-600">{{ info.horas }}h ({{ info.minutos_legibles }})</span>
+                            </li>
+                        </ul>
+
+                        <div class="mt-4">
+                            <h3 class="text-md font-semibold mb-2">Resumen del mes</h3>
+                            <p>Total trabajadas: <strong>{{ dato.resumen.trabajadas }}h ({{ dato.resumen.trabajadas_legibles }})</strong></p>
+                            <p>Total esperadas: <strong>{{ dato.resumen.esperadas }}h</strong></p>
+                            <p>
+                                Diferencia:
+                                <strong :class="{
+                                  'text-green-600': dato.resumen.diferencia >= 0,
+                                  'text-red-600': dato.resumen.diferencia < 0
+                                }">
+                                    {{ dato.resumen.diferencia }}h ({{ dato.resumen.diferencia_legibles }})
+                                </strong>
+                            </p>
+                        </div>
+                    </div>
+                    <form method="GET" action="/informes/horas">
+                        <input type="hidden" name="mes" :value="selectedMes" />
+                        <input type="hidden" name="anio" :value="selectedAnio" />
+                        <input type="hidden" name="usuario_id" :value="usuarioId" />
+
+                        <button type="submit" class="mt-4 text-sm underline text-white">
+                            ← Volver al informe individual
+                        </button>
+                    </form>
+                </div>
                 <!-- Detalle por semana -->
-                <div v-if="$page.props.semanas" class="w-full bg-white p-4 rounded shadow mb-6">
+                <div v-if="$page.props.semanas && !verTodos" class="w-full bg-white p-4 rounded shadow mb-6">
                     <h2 class="text-lg font-semibold mb-2">Detalle:</h2>
                     <ul>
                         <li v-for="(info, semana) in $page.props.semanas" :key="semana" class="mb-1">
@@ -89,7 +152,7 @@ const meses = [
                 </div>
 
                 <!-- Resumen mensual -->
-                <div v-if="$page.props.resumen" class="w-full bg-white p-4 rounded shadow">
+                <div v-if="$page.props.resumen && !verTodos" class="w-full bg-white p-4 rounded shadow">
                     <h2 class="text-lg font-semibold mb-2">Resumen del mes</h2>
                     <p>Total trabajadas: <strong>{{ $page.props.resumen.trabajadas }}h ({{ $page.props.resumen.trabajadas_legibles }})</strong></p>
                     <p>Total esperadas: <strong>{{ $page.props.resumen.esperadas }}h</strong></p>
@@ -103,6 +166,7 @@ const meses = [
                         </strong>
                     </p>
                 </div>
+
             </div>
         </div>
         <Footer />

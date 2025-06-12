@@ -11,19 +11,11 @@ class ContactoController extends Controller
 {
     public function index(Request $request)
     {
-        /*
-        return Inertia::render('Contacto', [
-            'departamento' => $request->input('departamento', 'soporte'),
-            'mensajePredeterminado' => $request->input(
-                'mensajePredeterminado',
-                'Estoy teniendo problemas con mi fichaje. Pónganse en contacto conmigo.'
-            )
-        ]);
-        */
 
         return Inertia::render('Contacto', [
             'departamento' => auth()->check() ? $request->input('departamento', 'soporte') : null,
-            'mensajePredeterminado' => auth()->check() ? $request->input('mensajePredeterminado', 'Estoy teniendo problemas con mi fichaje. Pónganse en contacto conmigo.') : ''
+            'mensajePredeterminado' => auth()->check() ? $request->input('mensajePredeterminado', 'Estoy teniendo problemas con mi fichaje. Pónganse en contacto conmigo.') : '',
+            'desdeBotonProblemas' => $request->boolean('desdeBotonProblemas')
         ]);
 
     }
@@ -37,7 +29,9 @@ class ContactoController extends Controller
             'email' => 'required|email|max:255',
             'departamento' => 'required|in:comercial,tecnico,soporte,otros',
             'mensaje' => 'required|string|min:10|max:2000',
-            'telefono' => 'nullable|string|max:20',
+            'telefono' => auth()->check()
+                ? 'required|regex:/^[0-9]+$/|max:20'
+                : 'nullable|regex:/^[0-9]+$/|max:20',
         ]);
 
         if (!empty($data['telefono'])) {
@@ -46,7 +40,13 @@ class ContactoController extends Controller
 
         Mail::to('oscardelgadoh@gmail.com')->send(new ContactMail($data));
 
-        return back()->with('success', 'Mensaje enviado correctamente');
+        return response()->json(['ok' => true]);
+        //return back()->with('success', 'Mensaje enviado correctamente');
 
+    }
+
+    public function caracteristicas()
+    {
+        return Inertia::render('Caracteristicas');
     }
 }

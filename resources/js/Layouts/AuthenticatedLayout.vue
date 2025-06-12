@@ -175,13 +175,13 @@ const showingNavigationDropdown = ref(false);
                 class="bg-white shadow"
                 v-if="$slots.header"
             >
-                <div class="d-flex align-items-center justify-content-center">
-                    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <div class="flex flex-col items-start pt-2 px-4">
+                    <div class="w-full py-2 mb-2">
                         <slot name="header" />
                     </div>
                     <button
-                        class="text-white mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8 bg-gray-700" style="border-radius: 8px;">
-                        <a :href="route('dashboard')">Volver</a>
+                        class="bg-gray-800 text-white px-3 py-1 mb-2 rounded">
+                        <a :href="route('dashboard')" class="text-white no-underline">Volver</a>
                     </button>
                 </div>
             </header>

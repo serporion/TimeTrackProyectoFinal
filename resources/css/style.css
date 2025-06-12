@@ -222,7 +222,7 @@ main {
 }
 .navbar-nav {
   text-align: right;
-  gap: clamp(10px, 6.3636363636px + 1.1363636364vw, 20px) !important;
+  gap: clamp(5px, 6.3636363636px + 1.1363636364vw, 15px) !important;
 }
 .navbar-item {
   list-style: none;
@@ -267,7 +267,7 @@ main {
 
 .navbar-collapse {
     background: linear-gradient(135deg, rgb(54, 63, 84), rgb(88, 95, 90)) !important;
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 0.5rem;
 }
 
@@ -295,14 +295,7 @@ main {
 }
 */
 
-#opiniones h2, #opiniones .h2 {
-  font-weight: 700;
-  font-size: 1.4rem !important;
-  margin-bottom: 2.5rem;
-  position: relative;
-  display: inline-block;
-}
-#opiniones h2::after, #opiniones .h2::after {
+#opiniones h2::after {
   content: "";
   position: absolute;
   bottom: -10px;

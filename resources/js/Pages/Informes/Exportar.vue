@@ -86,7 +86,7 @@ const generar = () => {
                 </div>
 
 
-                <div v-if="$page.props.flash?.success" class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
+                <div id="successFichero" v-if="$page.props.flash?.success" class="bg-green-100 text-green-800 px-4 py-2 rounded">
                     {{ $page.props.flash.success }}
                 </div>
 
@@ -100,6 +100,10 @@ const generar = () => {
 
     #hero-bg-exportar {
         background: linear-gradient(135deg, #3b82f6 0%, #22d3ee 100%) !important;
+    }
+
+    #successFichero {
+        margin-top: 0.5rem;
     }
 
     .btn-circle {
@@ -121,5 +125,7 @@ const generar = () => {
         }
 
     }
+
+
 
 </style>

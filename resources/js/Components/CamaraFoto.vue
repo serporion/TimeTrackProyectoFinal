@@ -77,26 +77,6 @@ const capturarYSubir = async () => {
             }
         })
 
-        /*
-        if (!res.ok) {
-            const html = await res.text()
-            console.error('Respuesta inesperada (no JSON):', html)
-            return
-        }
-        */
-
-        /*
-        if (!res.ok) {
-            if (res.status === 419) {
-                alert('⚠️ La sesión ha expirado. Refresca la página e inténtalo de nuevo.')
-            } else {
-                const html = await res.text()
-                console.error('Respuesta inesperada (no JSON):', html)
-            }
-            return
-        }
-
-         */
 
         const data = await res.json() //nuevo
         const fotoId = data.foto_id //nuevo

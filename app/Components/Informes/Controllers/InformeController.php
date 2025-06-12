@@ -39,179 +39,158 @@ class InformeController extends Controller
         return Informe::destroy($id);
     }
 
-    /*
     public function horasTrabajadas(Request $request)
     {
-        $userId = auth()->id();
-        $mes = $request->input('mes');
-        $anio = $request->input('anio');
-
-        $fichajes = Fichaje::where('usuario_id', $userId)
-            ->whereMonth('created_at', $mes)
-            ->whereYear('created_at', $anio)
-            ->get();
-
-        $horasTotales = 0;
-
-        foreach ($fichajes->groupBy(function ($f) {
-            return $f->created_at->format('Y-m-d');
-        }) as $dia => $fichajesDia) {
-            $entrada = $fichajesDia->where('tipo', 'entrada')->first();
-            $salida = $fichajesDia->where('tipo', 'salida')->first();
-
-            if ($entrada && $salida) {
-                $horasTotales += $salida->created_at->diffInMinutes($entrada->created_at) / 60;
-            }
-        }
-
-        return response()->json(['horas' => round($horasTotales, 2)]);
-    }
-    */
-
-    public function horasTrabajadas(Request $request)
-    {
-        //$user = auth()->user();
         $authUser = auth()->user();
-        $usuarioId = $request->input('usuario_id');     //nuevoHoras
-
-        if ($authUser->isAdmin() && $usuarioId) {   //nuevoHoras
-            $user = Usuario::findOrFail($usuarioId);
-        } else {
-            $user = $authUser;
-        }
-
+        $usuarioId = $request->input('usuario_id');
         $mes = $request->input('mes');
         $anio = $request->input('anio');
 
+
+        // En el select sin administradores
+        $usuarios = $authUser->isAdmin()
+            ? Usuario::where('role', '!=', 'administrador')
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get()
+            : collect();
+
+
+        // Si no hay mes o año, solo cargo la vista vacía
         if (!$mes || !$anio) {
             return Inertia::render('Informes/HorasTrabajadas', [
+                'usuarios' => $usuarios,
+                'usuarioId' => $usuarioId,
                 'semanas' => [],
                 'resumen' => null,
-                'usuarios' => $user->isAdmin()  //nuevoHoras
-                    ? Usuario::select('id', 'name')->orderBy('name')->get()
-                    : [],
-                'usuarioId' => $usuarioId,
+                'resumenes' => [],
+                'verTodos' => false,
             ]);
         }
 
+        // Informe de todos en conjunto
+        if ($authUser->isAdmin() && !$usuarioId) {
+            $resumenes = [];
+
+            foreach ($usuarios as $usuario) {
+                $resumenes[] = [
+                    'usuario_id' => $usuario->id,
+                    'nombre' => $usuario->name,
+                    'semanas' => $this->calcularSemanas($usuario, $mes, $anio),
+                    'resumen' => $this->calcularResumen($usuario, $mes, $anio),
+                ];
+            }
+
+            return Inertia::render('Informes/HorasTrabajadas', [
+                'usuarios' => $usuarios,
+                'usuarioId' => null,
+                'resumenes' => $resumenes,
+                'semanas' => [],
+                'resumen' => null,
+                'verTodos' => true,
+            ]);
+        }
+
+        // Informe individual
+        $user = $authUser->isAdmin() && $usuarioId
+            ? Usuario::findOrFail($usuarioId)
+            : $authUser;
+
+        $semanas = $this->calcularSemanas($user, $mes, $anio);
+        $resumen = $this->calcularResumen($user, $mes, $anio);
+
+        return Inertia::render('Informes/HorasTrabajadas', [
+            'usuarios' => $usuarios,
+            'usuarioId' => $usuarioId,
+            'resumenes' => [],
+            'semanas' => $semanas,
+            'resumen' => $resumen,
+            'verTodos' => false,
+        ]);
+    }
+
+    private function calcularSemanas($user, $mes, $anio)
+    {
         $inicioMes = Carbon::createFromDate($anio, $mes)->startOfMonth();
         $finMes = $inicioMes->copy()->endOfMonth();
 
-        // Obtener contrato válido
         $contrato = $user->contratos()
             ->where('fecha_inicio', '<=', $finMes)
-            ->where(function ($query) use ($inicioMes) {
-                $query->whereNull('fecha_fin')
-                    ->orWhere('fecha_fin', '>=', $inicioMes);
-            })
-            ->orderByDesc('fecha_inicio')
-            ->first();
+            ->where(function ($q) use ($inicioMes) {
+                $q->whereNull('fecha_fin')->orWhere('fecha_fin', '>=', $inicioMes);
+            })->orderByDesc('fecha_inicio')->first();
 
         $jornadaSemanal = $contrato->horas ?? 40;
 
-        // Fichajes del mes
         $fichajes = Fichaje::where('usuario_id', $user->id)
             ->whereBetween('timestamp', [$inicioMes, $finMes])
             ->orderBy('timestamp')
             ->get();
 
-        // Agrupar por día
-        $dias = $fichajes->groupBy(function ($f) {
-            return Carbon::parse($f->timestamp)->format('Y-m-d');
-        });
+        $dias = $fichajes->groupBy(fn($f) => Carbon::parse($f->timestamp)->format('Y-m-d'));
 
-        // Agrupar por semana
         $semanas = [];
 
         foreach ($dias as $fecha => $fichajesDia) {
             $semana = Carbon::parse($fecha)->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
-            if (!isset($semanas[$semana])) {
-                $semanas[$semana] = 0;
-            }
+            $semanas[$semana] = $semanas[$semana] ?? 0;
 
-            $fichajesOrdenados = $fichajesDia->sortBy('timestamp')->values();
-            $enEspera = null;
+            $ordenados = $fichajesDia->sortBy('timestamp')->values();
+            $entrada = null;
 
-            foreach ($fichajesOrdenados as $fichaje) {
-                if ($fichaje->tipo === 'entrada') {
-                    $enEspera = $fichaje;
-                } elseif ($fichaje->tipo === 'salida' && $enEspera) {
-                    $entradaTime = Carbon::parse($enEspera->timestamp);
-                    $salidaTime = Carbon::parse($fichaje->timestamp);
-
-                    if ($salidaTime->gt($entradaTime)) {
-                        $horas = ($salidaTime->timestamp - $entradaTime->timestamp) / 3600;
-                        $semanas[$semana] += $horas;
+            foreach ($ordenados as $fichaje) {
+                if ($fichaje->tipo === 'entrada') $entrada = $fichaje;
+                elseif ($fichaje->tipo === 'salida' && $entrada) {
+                    $start = Carbon::parse($entrada->timestamp);
+                    $end = Carbon::parse($fichaje->timestamp);
+                    if ($end->gt($start)) {
+                        $semanas[$semana] += ($end->timestamp - $start->timestamp) / 3600;
                     }
-
-                    $enEspera = null;
+                    $entrada = null;
                 }
             }
         }
 
-        // Convertir semanas a formato legible
-        $detalleSemanas = [];
-
-        foreach ($semanas as $inicioSemana => $horas) {
-            $minutos = (int) round($horas * 60);
-            $horasEnteras = floor($minutos / 60);
-            $restoMinutos = $minutos % 60;
-
-            $detalleSemanas[$inicioSemana] = [
+        $detalle = [];
+        foreach ($semanas as $inicio => $horas) {
+            $minutos = round($horas * 60);
+            $detalle[$inicio] = [
                 'horas' => number_format($horas, 2),
-                'minutos_legibles' => "{$horasEnteras}h {$restoMinutos}min"
+                'minutos_legibles' => floor($minutos / 60) . 'h ' . ($minutos % 60) . 'min',
             ];
         }
 
-        // Resumen mensual
-        $totalTrabajadas = array_sum($semanas);
-        $totalEsperadas = $jornadaSemanal * count($semanas);
-        $diferencia = $totalTrabajadas - $totalEsperadas;
+        return $detalle;
+    }
 
-        $trabajadasMin = (int) round($totalTrabajadas * 60);
-        $diffMin = (int) round($diferencia * 60);
+    private function calcularResumen($user, $mes, $anio)
+    {
+        $detalle = $this->calcularSemanas($user, $mes, $anio);
+        $total = array_sum(array_column($detalle, 'horas'));
+        $contrato = $user->contratos()->latest('fecha_inicio')->first();
+        $jornadaSemanal = $contrato->horas ?? 40;
+        $esperadas = $jornadaSemanal * count($detalle);
+        $diferencia = $total - $esperadas;
 
-        $resumen = [
-            'trabajadas' => number_format($totalTrabajadas, 2),
-            'trabajadas_legibles' => floor($trabajadasMin / 60) . 'h ' . ($trabajadasMin % 60) . 'min',
-            'esperadas' => $totalEsperadas,
+        $totalMin = round($total * 60);
+        $diffMin = round($diferencia * 60);
+
+        return [
+            'trabajadas' => number_format($total, 2),
+            'trabajadas_legibles' => floor($totalMin / 60) . 'h ' . ($totalMin % 60) . 'min',
+            'esperadas' => $esperadas,
             'diferencia' => number_format($diferencia, 2),
-            /*
-            'diferencia_legibles' => ($diferencia >= 0 ? '' : '-') .
-                abs(floor($diffMin / 60)) . 'h ' . (abs($diffMin) % 60) . 'min'
-            */
-            'diferencia_legibles' => sprintf(
-                '%s%dh %dmin',
+            'diferencia_legibles' => sprintf('%s%dh %dmin',
                 ($diferencia < 0 ? '-' : ''),
                 abs(intval($diffMin / 60)),
                 abs($diffMin % 60)
             )
         ];
-
-        return Inertia::render('Informes/HorasTrabajadas', [
-            'semanas' => $detalleSemanas,
-            'resumen' => $resumen,
-            'usuarios' => $authUser->isAdmin() //nuevoHoras
-                ? Usuario::select('id', 'name')->orderBy('name')->get()
-                : [],
-            'usuarioId' => $usuarioId,
-        ]);
     }
-
 
     public function registroFichajes(Request $request)
     {
-        //return Fichaje::with('usuario')->get();
-        /*
-        $fichajes = Fichaje::with('usuario')->orderBy('timestamp', 'desc')->get();
-
-        return Inertia::render('Informes/RegistroFichajes', [
-            'fichajes' => $fichajes
-        ]);
-        */
-
         $user = auth()->user();
-
         $query = Fichaje::with('usuario');
 
         // Filtro por usuario
@@ -243,7 +222,5 @@ class InformeController extends Controller
             'usuarios' => $usuarios,
             'filters' => $request->only(['usuarioId', 'fechaInicio', 'fechaFin']),
         ]);
-
     }
-
 }

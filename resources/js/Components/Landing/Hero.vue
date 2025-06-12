@@ -1,5 +1,6 @@
 <script setup>
 
+
 </script>
 
 <template>
@@ -8,14 +9,12 @@
         <div class="container text-center text-white position-relative z-1">
             <h1 class="display-4 fw-bold pt-5">TimeTrack: Fichaje Inteligente para Restaurantes</h1>
             <p class="lead">Simplifica el control de horarios y cumple con la ley sin complicaciones</p>
-            <a href="#" class="btn btn-primary btn-lg">Prueba Gratis </a>
+            <a :href="route('contacto')" class="btn btn-primary btn-lg">Pida una prueba</a>
         </div>
     </section>
 </template>
 
 <style scoped>
-
-
 
 @media (min-width: 768px) {
     p, a {
