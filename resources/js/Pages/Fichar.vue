@@ -46,7 +46,8 @@ const verificarFichaje = async () => {
 
     if (data.estado === 'expirado') {
         clearInterval(intervalId)
-        alert('⚠️ El QR ha expirado. Genera uno nuevo navegando a "Fichar" ')
+        mensaje.value = `⏱️ El código QR ha expirado. Vuelva a generar uno nuevo.`
+        //alert('⚠️ El QR ha expirado. Genera uno nuevo navegando a "Fichar" ')
         //router.visit('/dashboard') // Redirige al inicio.
     }
 }

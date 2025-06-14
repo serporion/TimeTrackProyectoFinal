@@ -12,7 +12,7 @@ import Footer from "@/Components/Landing/Footer.vue";
         <Navbar />
         <div class="flex-grow hero">
             <div class="hero-overlay"></div>
-                <div class="hero-content min-h-screen flex flex-col justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+                <div class="hero-content min-h-screen flex flex-col justify-center items-center bg-gray-100 px-4 sm:px-6 lg:px-8">
                     <div class="flex items-end gap-4 mb-4">
                         <a :href="route('landing')" class="btn btn-sm btn-circle bg-white text-blue-600 hover:bg-gray-100" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -21,7 +21,7 @@ import Footer from "@/Components/Landing/Footer.vue";
                         </a>
                         <h1 class="text-white text-2xl md:text-3xl font-bold">Escríbanos</h1>
                     </div>
-                    <div class="max-w-md w-full space-y-8 bg-white p-2 shadow-lg rounded-xl">
+                    <div class="max-w-md w-full space-y-8 bg-white p-2 shadow-lg rounded-xl mb-4">
                         <ContactForm />
                     </div>
                 </div>

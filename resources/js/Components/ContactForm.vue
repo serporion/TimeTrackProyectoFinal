@@ -119,11 +119,11 @@ const handleSubmit = async () => {
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Mensaje</label>
-                    <textarea v-model="form.mensaje" class="input" rows="5" :class="{ 'border-red-500': errors.mensaje }"></textarea>
+                    <textarea v-model="form.mensaje" class="input" rows="4" :class="{ 'border-red-500': errors.mensaje }"></textarea>
                     <p v-if="errors.mensaje" class="text-red-500 text-sm mt-1">{{ errors.mensaje }}</p>
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-success md:w-auto text-white font-semibold rounded hover:bg-blue-700">
+                    <button type="submit" class="btn btn-demo md:w-auto text-white font-semibold rounded hover:bg-blue-700">
                         Enviar
                     </button>
                 </div>
@@ -142,6 +142,21 @@ const handleSubmit = async () => {
         border: 1px solid #cbd5e0;
         border-radius: 0.375rem;
         font-size: 1rem;
+    }
+
+    .btn-demo {
+        border-radius: 30px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(to right, #4a5568, #5d636b);
+        border: none;
+        box-shadow: 0 4px 15px rgba(58, 123, 213, 0.4);
+        color: #fff;
     }
 
     @media (max-width: 768px) {

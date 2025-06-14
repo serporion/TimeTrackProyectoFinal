@@ -52,32 +52,32 @@ function irAGestionPermisos() {
         <div class="hero flex-grow">
             <section class="text-center">
                 <div class="hero-overlay"></div>
-                <div class="hero-content d-flex flex-column justify-content-center align-items-center px-3 mb-4 mb-sm-0">
+                <div class="hero-content d-flex flex-column justify-content-center align-items-center px-3 mb-sm-0">
                     <h1 class="text-white text-4xl text-center font-semibold">
                         ¡Bienvenido/a al Sistema!
                     </h1>
-                    <p class="text-white text-xl text-center md:mb-7 lg:mb-10">Accede a tus informes, ficha tu entrada/salida y más</p>
+                    <p class="text-white text-xl text-center">Accede a tus informes, ficha tu entrada/salida y más</p>
 
-                    <div class="d-grid gap-3 py-4" style="margin: 0 auto;">
+                    <div class="d-grid gap-4 py-4" style="margin: 0 auto;">
                         <!-- enlaces para empleado -->
                         <template v-if="user && user.role === 'empleado'">
                             <Link
                                 href="/fichar"
-                                class="btn btn-lg px-6 py-2.5 rounded-pill border-0 fw-bold"
-                                style="background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);"
+                                class="px-3 py-2.5 rounded-xl font-bold text-white"
+                                style="background: linear-gradient(135deg, #00c6ff, #0072ff); box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);"
                             >
                                 Fichar
                             </Link>
 
                             <button
-                                class="btn btn-lg px-6 py-2.5 rounded-pill border-0 fw-bold"
+                                class="px-3 py-2.5 rounded-xl font-bold text-white"
                                 style="background: linear-gradient(135deg, #3a7bd5, #00d2ff); color: white; box-shadow: 0 4px 15px rgba(58, 123, 213, 0.4);"
                                 @click="goTo('informes')"
                             >
                                 Informes
                             </button>
                             <button
-                                class="btn btn-lg px-6 py-2.5 rounded-pill border-0 fw-bold"
+                                class="px-3 py-2.5 rounded-xl font-bold text-white"
                                 style="background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);"
                                 @click="goTo('configuser')"
                             >
@@ -86,41 +86,51 @@ function irAGestionPermisos() {
                         </template>
                         <!-- enlaces para administrador -->
                         <template v-else-if="user && user.role === 'administrador'">
+                            <div class="flex justify-center mb-2">
                             <button v-if="permisos.includes('gestionar_usuarios')"
-                                class="btn btn-lg px-6 py-2.5 rounded-pill border-0 fw-bold"
+                                    class="block w-[150px] md:w-full max-w-xs px-2 py-2 md:px-6 md:py-3 rounded-xl font-bold text-white text-center text-sm md:text-base"
                                 style="background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);"
                                 @click="goTo('usuarios')"
                             >
                                 Gestión de Usuarios
                             </button>
+                            </div>
+                            <div class="flex justify-center mb-2">
                             <button v-if="permisos.includes('gestionar_fichajes')"
-                                class="btn btn-lg px-6 py-2.5 rounded-pill border-0 fw-bold"
+                                    class="block w-[150px] md:w-full max-w-xs px-2 py-2 md:px-6 md:py-3 rounded-xl font-bold text-white text-center text-sm md:text-base"
                                 style="background: linear-gradient(135deg, #3a7bd5, #00d2ff); color: white; box-shadow: 0 4px 15px rgba(58, 123, 213, 0.4);"
                                 @click="goTo('informes')"
                             >
-                                Generación Informes
+                                Informes
                             </button>
+                            </div>
+                            <div class="flex justify-center mb-2">
                             <button v-if="permisos.includes('gestionar_permisos')"
-                                    class="btn btn-lg px-6 py-2.5 rounded-pill border-0 fw-bold"
-                                    style="background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);"
-                                    @click="irAGestionPermisos"
+                                    class="block w-[150px] md:w-full max-w-xs px-2 py-2 md:px-6 md:py-3 rounded-xl font-bold text-white text-center text-sm md:text-base"
+                                style="background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);"
+                                @click="irAGestionPermisos"
                             >
                                 Gestión de permisos
                             </button>
+                            </div>
+                            <div class="flex justify-center mb-2">
                             <button v-if="permisos.includes('gestionar_usuarios')"
-                                class="btn btn-lg px-6 py-2.5 rounded-pill border-0 fw-bold"
+                                    class="block w-[150px] md:w-full max-w-xs px-2 py-2 md:px-6 md:py-3 rounded-xl font-bold text-white text-center text-sm md:text-base"
                                 style="background: linear-gradient(135deg, #3a7bd5, #00d2ff); color: white; box-shadow: 0 4px 15px rgba(58, 123, 213, 0.4);"
                                 @click="goTo('configuser')"
                             >
                                 Configuración
                             </button>
-                            <button v-if="permisos.includes('gestionar_inicio')"
-                                    class="btn btn-lg px-6 py-2.5 rounded-pill border-0 fw-bold"
-                                    style="background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);"
+                            </div>
+                            <div class="flex justify-center mb-2">
+                                <button
+                                    class="block w-[150px] md:w-full max-w-xs px-2 py-2 md:px-6 md:py-3 rounded-xl font-bold text-white text-center text-sm md:text-base"
+                                    style="background: linear-gradient(135deg, #00c6ff, #0072ff); box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);"
                                     @click="goTo('iniciar')"
-                            >
-                                Inicio de Aplicación Fichaje
-                            </button>
+                                >
+                                    Inicio de Aplicación Fichaje
+                                </button>
+                            </div>
 
                         </template>
                         <template v-else>

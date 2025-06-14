@@ -88,8 +88,11 @@ const fichajesFiltrados = computed(() => {
         </div>
 
         <!-- Filtros de fecha -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-            <div>
+        <div :class="[
+                'gap-2',
+                isAdmin ? 'grid grid-cols-2 md:grid-cols-3' : 'grid grid-cols-2 md:grid-cols-6'
+            ]">
+            <div :class="isAdmin ? '' : 'md:col-span-2'">
                 <label class="block text-sm font-medium text-gray-700 mb-1 bg-blue-100 px-2 py-1 rounded">
                     Desde
                 </label>
@@ -99,7 +102,7 @@ const fichajesFiltrados = computed(() => {
                     class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 >
             </div>
-            <div>
+            <div :class="isAdmin ? '' : 'md:col-span-2'">
                 <label class="block text-sm font-medium text-gray-700 mb-1 bg-blue-100 px-2 py-1 rounded">
                     Hasta
                 </label>

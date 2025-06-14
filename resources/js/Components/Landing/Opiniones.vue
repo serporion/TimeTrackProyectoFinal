@@ -9,7 +9,6 @@ import cliente3 from '../../../img/cliente3.jpg'
 
 onMounted(() => {
     new Carousel(document.getElementById('testimonialCarousel'), {
-        interval: 3000, // Cambia cada 3 segundos
         ride: 'carousel' // Autoplay
     });
 });
@@ -37,7 +36,7 @@ const opiniones = [
     <section id="opiniones" class="pb-0.5">
         <div class="container">
             <h2 class="font-bold text-base sm:text-lg md:text-xl lg:text-2xl mb-10 inline-block relative">Lo que dicen nuestros clientes</h2>
-            <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
                 <div class="carousel-inner">
                     <div
                         v-for="(opinion, index) in opiniones"

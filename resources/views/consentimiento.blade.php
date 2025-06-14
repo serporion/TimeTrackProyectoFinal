@@ -2,15 +2,15 @@
 
 @section('content')
 
-        <div class="col-12 col-md-8 col-lg-6">
+        <div class="col-12 col-md-8 col-lg-6 mb-5">
             <div class="card shadow-sm rounded-3">
                 <div class="card-body p-4">
                     <h2 class="h4 mb-3 text-dark">
                         Bienvenido a la primera entrada al Sistema.
                     </h2>
-                    <h3 class="h5 mb-3 text-dark">
+                    <p class="mb-3 text-dark">
                         Consentimiento de tratamiento de datos e imagen
-                    </h3>
+                    </p>
 
                     <p class="text-secondary small">
                         De acuerdo con el Reglamento General de Protección de Datos (RGPD) y la Ley Orgánica 3/2018,
@@ -21,7 +21,7 @@
                     <form method="POST" action="{{ route('consentimiento') }}">
                         @csrf
 
-                        <div class="form-check my-3">
+                        <div class="form-check my-1">
                             <input
                                 class="form-check-input border border-secondary border-2 rounded-1"
                                 type="checkbox"
@@ -36,12 +36,12 @@
                         </div>
 
                         @error('consiente_datos')
-                        <div class="text-danger small mb-2">
+                        <div class="text-danger small mb-1">
                             ❗ {{ $message }}
                         </div>
                         @enderror
 
-                        <div class="d-flex justify-content-between mt-4 gap-4">
+                        <div class="d-flex justify-content-between gap-4">
                             <a href="{{ route('logout') }}"
                                class="btn btn-lg px-6 py-2.5 rounded-pill border-0 fw-bold btn-gradient"
                                style="background: linear-gradient(135deg, #d3d3d3, #a9a9a9); color: white; box-shadow: 0 4px 15px rgba(169, 169, 169, 0.4);"
@@ -88,6 +88,7 @@
 
     .card {
         max-width: 90vw;
+        max-height: 94vh;
         margin: 0 auto;
     }
 </style>

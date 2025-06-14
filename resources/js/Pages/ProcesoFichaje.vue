@@ -118,7 +118,8 @@ async function onFichajeEscaneado(data) {
         formData.append('qr_data', JSON.stringify(data))
         formData.append('clave', data.clave)
 
-        const res = await fetch('/fichaje/validar', {
+        //const res = await fetch('/fichaje/validar', {
+        const res = await fetch(`${window.location.origin}/fichaje/validar`, {
             method: 'POST',
             body: formData,
             credentials: 'include'
@@ -220,7 +221,7 @@ function onFotoSubidaError(mensaje) {
     <div class="min-h-screen flex flex-col">
         <Navbar />
         <div class="hero-overlay"></div>
-        <div class="flex-grow hero-content">
+        <div class="flex-grow hero-content pt-16">
             <div class="p-4 max-w-lg mx-auto">
                 <h1 class="text-2xl font-bold text-center mb-4">Modo Terminal</h1>
 

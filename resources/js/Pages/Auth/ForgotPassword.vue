@@ -32,7 +32,7 @@ const submit = () => {
             <div class="hero-overlay"></div>
 
             <div class="hero-content">
-                <h1 class="text-white text-4xl text-center font-semibold">
+                <h1 class="text-white text-3xl text-center font-semibold">
                     Cambie su contraseña
                 </h1>
             </div>
@@ -41,9 +41,9 @@ const submit = () => {
                 <Head title="Forgot Password" />
 
                 <div class="mb-4 text-sm text-gray-600">
-                    Forgot your password? No problem. Just let us know your email
-                    address and we will email you a password reset link that will allow
-                    you to choose a new one.
+                    ¿Olvidó su contraseña o, simplemente quiere cambiarla?. Escríbanos
+                    su correo electrónico con el que esté dado de alta en el sistema y
+                    recibirá un link para poder cambiarla.
                 </div>
 
                 <div

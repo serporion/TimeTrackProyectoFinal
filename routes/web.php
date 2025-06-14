@@ -145,15 +145,16 @@ Route::get('/cert', function () {
 
 Route::get('/seed-manual', function () {
     DB::table('usuarios')->insert([
-        ['id' => 1, 'name' => 'Jose Pinero', 'dni' => '000000001', 'email' => 'jose@test.com', 'password' => bcrypt('josetest'), 'role' => 'empleado', 'consiente_datos' => 0],
-        ['id' => 2, 'name' => 'Paqui', 'dni' => '000000002', 'email' => 'paqui@test.com', 'password' => bcrypt('paquitest'), 'role' => 'empleado', 'consiente_datos' => 0],
-        ['id' => 3, 'name' => 'Pablo', 'dni' => '000000003', 'email' => 'pablo@test.com', 'password' => bcrypt('pablotest'), 'role' => 'empleado', 'consiente_datos' => 0],
-        ['id' => 4, 'name' => 'Admin Terminal', 'dni' => '000000004', 'email' => 'terminal@test.com', 'password' => bcrypt('terminal'), 'role' => 'administrador', 'consiente_datos' => 1],
-        ['id' => 5, 'name' => 'Admin Completo', 'dni' => '000000005', 'email' => 'completo@test.com', 'password' => bcrypt('completo'), 'role' => 'administrador', 'consiente_datos' => 1],
-        ['id' => 6, 'name' => 'Alicia', 'dni' => '000000006', 'email' => 'alicia@test.com', 'password' => bcrypt('aliciatest'), 'role' => 'empleado', 'consiente_datos' => 0],
+        ['id' => 99, 'name' => 'Jose Pinero', 'dni' => '000000099', 'email' => 'jose@test.com', 'password' => bcrypt('josetest'), 'role' => 'empleado', 'consiente_datos' => 0],
+        ['id' => 98, 'name' => 'Paqui', 'dni' => '000000098', 'email' => 'paqui@test.com', 'password' => bcrypt('paquitest'), 'role' => 'empleado', 'consiente_datos' => 0],
+        ['id' => 97, 'name' => 'Pablo', 'dni' => '000000097', 'email' => 'pablo@test.com', 'password' => bcrypt('pablotest'), 'role' => 'empleado', 'consiente_datos' => 0],
+        ['id' => 96, 'name' => 'Admin Terminal', 'dni' => '000000096', 'email' => 'terminal@test.com', 'password' => bcrypt('terminal'), 'role' => 'administrador', 'consiente_datos' => 1],
+        ['id' => 95, 'name' => 'Admin Completo', 'dni' => '000000095', 'email' => 'completo@test.com', 'password' => bcrypt('completo'), 'role' => 'administrador', 'consiente_datos' => 1],
+        ['id' => 94, 'name' => 'Alicia', 'dni' => '000000094', 'email' => 'alicia@test.com', 'password' => bcrypt('aliciatest'), 'role' => 'empleado', 'consiente_datos' => 0],
+        ['id' => 93, 'name' => 'Admin Informes', 'dni' => '000000093', 'email' => 'informes@test.com', 'password' => bcrypt('informes'), 'role' => 'administrador', 'consiente_datos' => 1],
     ]);
 
-    $usuarios = Usuario::whereIn('id', [1, 2, 3, 4, 5, 6])->get();
+    $usuarios = Usuario::whereIn('id', [99, 98, 97, 96, 95, 94, 93])->get();
 
     foreach ($usuarios as $usuario) {
         $token = JWTAuth::fromUser($usuario);
@@ -165,26 +166,44 @@ Route::get('/seed-manual', function () {
 
     // Contratos
     DB::table('contratos')->insert([
-        ['usuario_id' => 1, 'horas' => 20, 'fecha_inicio' => '2024-12-03 18:30:37', 'fecha_fin' => '2025-05-02 18:30:37'],
-        ['usuario_id' => 1, 'horas' => 40, 'fecha_inicio' => Carbon::now()],
-        ['usuario_id' => 2, 'horas' => 20, 'fecha_inicio' => Carbon::now()],
-        ['usuario_id' => 3, 'horas' => 20, 'fecha_inicio' => Carbon::now()],
-        ['usuario_id' => 6, 'horas' => 40, 'fecha_inicio' => Carbon::now()],
+        ['usuario_id' => 99, 'horas' => 20, 'fecha_inicio' => '2024-12-03 18:30:37', 'fecha_fin' => '2025-05-02 18:30:37'],
+        ['usuario_id' => 99, 'horas' => 40, 'fecha_inicio' => Carbon::now(), 'fecha_fin' => null],
+        ['usuario_id' => 98, 'horas' => 20, 'fecha_inicio' => Carbon::now(), 'fecha_fin' => null],
+        ['usuario_id' => 97, 'horas' => 20, 'fecha_inicio' => Carbon::now(), 'fecha_fin' => null],
+        ['usuario_id' => 94, 'horas' => 40, 'fecha_inicio' => Carbon::now(), 'fecha_fin' => null],
     ]);
 
     // Permisos
-    DB::table('permisos')->insert([
-        ['usuario_id' => 4, 'permiso' => 'gestionar_inicio'],
-        ['usuario_id' => 5, 'permiso' => 'gestionar_usuarios'],
-        ['usuario_id' => 5, 'permiso' => 'gestionar_fichajes'],
-        ['usuario_id' => 5, 'permiso' => 'gestionar_permisos'],
-        ['usuario_id' => 5, 'permiso' => 'gestionar_inicio'],
+    DB::table('administradores')->insert([
+        [
+            'usuario_id' => 93,
+            'permisos' => json_encode([
+                'gestionar_fichajes',
+            ]),
+        ],
+        [
+            'usuario_id' => 95,
+            'permisos' => json_encode([
+                'gestionar_usuarios',
+                'gestionar_fichajes',
+                'gestionar_permisos',
+                'gestionar_inicio',
+            ]),
+        ],
+        [
+            'usuario_id' => 96,
+            'permisos' => json_encode([
+                'gestionar_inicio',
+            ]),
+        ],
     ]);
 
-    return 'Usuarios y credenciales creados correctamente.';
+
+    return 'Usuarios, credenciales, contratos y permisos creados correctamente.';
 });
 
-Route::post('/fichaje/validar', [FichajeController::class, 'validarQr'])->name('fichaje.validar');
+//Route::post('/fichaje/validar', [FichajeController::class, 'validarQr'])->name('fichaje.validar');
+Route::middleware('auth')->post('/fichaje/validar', [FichajeController::class, 'validarQr'])->name('fichaje.validar');
 
 Route::get('/ayuda-fichaje', function () {
     return Inertia::render('AyudaFichaje');

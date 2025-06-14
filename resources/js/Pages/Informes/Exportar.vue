@@ -30,8 +30,8 @@ const generar = () => {
         <Navbar />
         <div id="hero-bg-exportar" class="flex-grow hero">
             <div class="hero-overlay bg-opacity-10"></div>
-            <div class="hero-content flex flex-col items-start px-3 py-6 sm:px-6 md:px-12 w-full max-w-2xl mx-auto">
-                <div class="flex items-end gap-3 mb-4 mt-8 w-full">
+            <div class="hero-content flex flex-col items-start px-3 py-3 sm:px-6 md:px-12 w-full max-w-2xl mx-auto">
+                <div class="flex items-end gap-3 mb-4 w-full">
                     <a href="/informes" class="btn btn-sm btn-circle bg-white text-blue-600 hover:bg-gray-100">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
@@ -99,7 +99,7 @@ const generar = () => {
 <style scoped>
 
     #hero-bg-exportar {
-        background: linear-gradient(135deg, #3b82f6 0%, #22d3ee 100%) !important;
+        background: #5d636b;
     }
 
     #successFichero {

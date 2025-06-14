@@ -45,8 +45,8 @@ onMounted(() => {
         <Navbar />
         <div id="hero-bg-registro" class="flex-grow hero">
             <div class="hero-overlay bg-opacity-10"></div>
-            <div class="hero-content flex flex-col items-start px-2 py-4 sm:px-6 md:px-12 w-full max-w-2xl mx-auto">
-                    <div id="registroFi-informes" class="flex gap-3 mt-8 mb-4">
+            <div class="hero-content flex flex-col items-start px-2 py-3 sm:px-6 md:px-12 w-full max-w-2xl mx-auto">
+                    <div id="registroFi-informes" class="flex gap-3 mb-4">
                         <a href="/informes" class="btn btn-sm ml-1 btn-circle bg-white text-blue-600 hover:bg-gray-100">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
@@ -75,8 +75,8 @@ onMounted(() => {
                                 <table class="min-w-[300px] w-full bg-white shadow rounded text-sm">
                                     <thead class="bg-blue-100 text-gray-700 rounded">
                                     <tr>
-                                        <th class="p-2 text-left">ID</th>
-                                        <th class="p-2 text-left">Usuario</th>
+                                        <th v-if="isAdmin" class="p-2 text-left">ID</th>
+                                        <th v-if="isAdmin" class="p-2 text-left">Usuario</th>
                                         <th class="p-2 text-left">Tipo</th>
                                         <th class="p-2 text-left">Fecha</th>
                                         <th class="p-2 text-left">Hora</th>
@@ -88,8 +88,8 @@ onMounted(() => {
                                         :key="fichaje.id"
                                         class="border-b hover:bg-blue-50 transition-colors"
                                     >
-                                        <td class="p-2">{{ fichaje.usuario.id }}</td>
-                                        <td class="p-2">{{ fichaje.usuario?.name || 'Desconocido' }}</td>
+                                        <td v-if="isAdmin" class="p-2">{{ fichaje.usuario.id }}</td>
+                                        <td v-if="isAdmin" class="p-2">{{ fichaje.usuario?.name || 'Desconocido' }}</td>
                                         <td class="p-2">
                                                 <span :class="{
                                                     'bg-green-100 text-green-800': fichaje.tipo === 'entrada',
@@ -139,7 +139,7 @@ onMounted(() => {
 <style scoped>
 
     #hero-bg-registro {
-        background: linear-gradient(135deg, #3b82f6 0%, #22d3ee 100%) !important;
+        background: #5d636b;
     }
 
     #registroFi-informes {

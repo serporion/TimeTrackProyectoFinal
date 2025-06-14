@@ -114,19 +114,19 @@ const cerrarSesion = () => {
                         <template v-if="user">
                             <template v-if="user.role === 'administrador'">
                                 <!-- enlaces para administrador -->
-                                <li class="nav-item" v-if="permisos.includes('gestionar_usuarios')"><a class="nav-link" href="/admin/usuario">Gestión de usuarios</a></li>
-                                <li class="nav-item" v-if="permisos.includes('gestionar_fichajes')"><a class="nav-link" href="/informes">Informes</a></li>
-                                <li class="nav-item" v-if="permisos.includes('gestionar_permisos')"><a class="nav-link" href="/admin/administrador">Gestión de permisos</a></li>
+                                <li class="nav-item" v-if="permisos.includes('gestionar_usuarios')"><a class="nav-link pe-1" href="/admin/usuario">Gestión de usuarios</a></li>
+                                <li class="nav-item" v-if="permisos.includes('gestionar_fichajes')"><a class="nav-link pe-1" href="/informes">Informes</a></li>
+                                <li class="nav-item" v-if="permisos.includes('gestionar_permisos')"><a class="nav-link pe-1" href="/admin/administrador">Gestión de permisos</a></li>
                                 <li class="nav-item" v-if="permisos.includes('gestionar_usuarios')">
-                                    <a class="nav-link" :href="route('profile.edit')">Configuración</a>
+                                    <a class="nav-link pe-1" :href="route('profile.edit')">Configuración</a>
                                 </li>
                             </template>
                             <template v-else-if="user.role === 'empleado'">
                                 <!-- enlaces para empleado -->
-                                <li class="nav-item"><a class="nav-link" href="/fichar">Fichar</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/informes">Informes</a></li>
+                                <li class="nav-item"><a class="nav-link pe-1" href="/fichar">Fichar</a></li>
+                                <li class="nav-item"><a class="nav-link pe-1" href="/informes">Informes</a></li>
                                 <li class="nav-item">
-                                    <a class="nav-link" :href="route('profile.edit')">Configuración</a>
+                                    <a class="nav-link pe-1" :href="route('profile.edit')">Configuración</a>
                                 </li>
                             </template>
                             <li class="nav-item dropdown" id="customDropdown" v-if="!isExpanded">
@@ -139,19 +139,19 @@ const cerrarSesion = () => {
                                 </a>
 
                                 <ul
-                                    class="dropdown-menu dropdown-menu-end show botonCerrar"
-                                    :style="{ display: isDropdownOpen ? 'block' : 'none' }"
+                                    class="dropdown-menu dropdown-menu-end show botonCerrar text-end"
+                                    :style="{ display: isDropdownOpen ? 'block' : 'none', minWidth: '5rem' }"
                                     style="position: absolute; right: 0; top: 100%;"
                                 >
                                     <li>
-                                        <a class="dropdown-item font-bold" href="#" @click.prevent="cerrarSesion">
+                                        <a class="dropdown-item pe-3 font-bold" href="#" @click.prevent="cerrarSesion">
                                             Cerrar sesión
                                         </a>
                                     </li>
                                 </ul>
                             </li>
                             <li v-if="isExpanded" class="nav-item d-lg-none">
-                                <a class="nav-link font-bold text-danger" href="#" @click.prevent="cerrarSesion">
+                                <a class="nav-link font-bold pe-1 text-danger" href="#" @click.prevent="cerrarSesion">
                                     Cerrar sesión
                                 </a>
                             </li>

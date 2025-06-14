@@ -26,7 +26,7 @@ const navigate = (route) => {
         <Navbar />
         <div class="flex-grow hero">
             <div class="hero-overlay bg-opacity-10"></div>
-            <div class="hero-content flex flex-col items-center px-4 py-12 mt-6 mb-4 mb-sm-0">
+            <div class="hero-content flex flex-col items-center px-4 mb-sm-0">
                 <h1 class="text-4xl text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8) font-bold mb-10 text-center drop-shadow-md">Informes</h1>
 
                 <div class="grid gap-4 max-w-md">
